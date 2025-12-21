@@ -11,28 +11,73 @@ const registerHandlers = ({
     processObj = process,
     log = logger
 } = {}) => {
+    // Safe serializer: shallowly serialize objects without invoking toJSON or other getters
+    const safeSerialize = (obj) => {
+        try {
+            if (obj === null) return null;
+            if (typeof obj !== 'object') return obj;
+            const out = {};
+            for (const k of Object.keys(obj)) {
+                try {
+                    const v = obj[k];
+                    if (v === null) { out[k] = null; continue; }
+                    if (typeof v === 'object') {
+                        const info = { type: v.constructor && v.constructor.name ? v.constructor.name : 'Object' };
+                        try { if ('id' in v && (typeof v.id === 'string' || typeof v.id === 'number')) info.id = v.id; } catch (e) {}
+                        try { if ('name' in v && typeof v.name === 'string') info.name = v.name; } catch (e) {}
+                        out[k] = info;
+                    } else if (typeof v === 'function') {
+                        out[k] = `[Function: ${v.name || 'anonymous'}]`;
+                    } else {
+                        out[k] = v;
+                    }
+                } catch (e) {
+                    out[k] = '[Unserializable]';
+                }
+            }
+            return out;
+        } catch (e) {
+            try { return String(obj); } catch (ee) { return '[Unserializable]'; }
+        }
+    };
+
     const handlers = {
-        uncaughtException: (err) => log.error('Uncaught Exception', {
-            name: err?.name,
-            message: err?.message,
-            stack: err?.stack,
-            error: err
-        }),
-        unhandledRejection: (reason, promise) => log.error('Unhandled Rejection', {
-            reason: reason instanceof Error ? {
-                name: reason.name,
-                message: reason.message,
-                stack: reason.stack,
-                error: reason
-            } : reason,
-            promise
-        }),
-        warning: (warning) => log.warn('Warning', {
-            name: warning?.name,
-            message: warning?.message,
-            stack: warning?.stack,
-            warning
-        })
+        uncaughtException: (err) => {
+            try {
+                // Include raw error object for downstream consumers, but also provide safe fields
+                log.error('Uncaught Exception', {
+                    name: err && err.name,
+                    message: err && err.message,
+                    stack: err && err.stack,
+                    error: err
+                });
+            } catch (e) {
+                try { log.error('Uncaught Exception (logging failed)', { error: String(err) }); } catch (ee) { /* swallow */ }
+            }
+        },
+        unhandledRejection: (reason, promise) => {
+            try {
+                if (reason instanceof Error) {
+                    return log.error('Unhandled Rejection', { reason: { name: reason.name, message: reason.message, stack: reason.stack, error: reason }, promise });
+                }
+                return log.error('Unhandled Rejection', { reason: safeSerialize(reason), promise: safeSerialize(promise) });
+            } catch (e) {
+                try { log.error('Unhandled Rejection (logging failed)', { reason: String(reason) }); } catch (ee) { /* swallow */ }
+            }
+        },
+        warning: (warning) => {
+            try {
+                // include raw warning object while also exposing key fields
+                log.warn('Warning', {
+                    name: warning && warning.name,
+                    message: warning && warning.message,
+                    stack: warning && warning.stack,
+                    warning
+                });
+            } catch (e) {
+                try { log.warn('Warning (logging failed)', { warning: String(warning) }); } catch (ee) { /* swallow */ }
+            }
+        }
     };
     processObj.on('uncaughtException', handlers.uncaughtException);
     processObj.on('unhandledRejection', handlers.unhandledRejection);

@@ -1,15 +1,16 @@
-import log from '@eliware/log';
+import type logger from '@eliware/log';
 
-/**
- * Registers process-level exception handlers for uncaught exceptions, unhandled rejections, warnings, and exit events.
- * @param options
- * @param options.processObj The process object to attach handlers to (default: process).
- * @param options.log Logger for output (default: log).
- * @returns { removeHandlers } Function to remove all registered handlers (for testability).
- */
+export interface RegisterHandlersOptions {
+  processObj?: NodeJS.Process;
+  log?: typeof logger;
+}
+
+export interface RegisteredHandlers {
+  removeHandlers(): void;
+}
+
 export declare function registerHandlers(
-  options?: {
-    processObj?: NodeJS.Process,
-    log?: typeof log
-  }
-): { removeHandlers: () => void };
+  options?: RegisterHandlersOptions
+): RegisteredHandlers;
+
+export default registerHandlers;

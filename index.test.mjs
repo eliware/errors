@@ -1,122 +1,63 @@
 import { jest } from '@jest/globals';
-import { registerHandlers } from './index.mjs';
-import defaultExport from './index.mjs';
+import registerHandlers, { registerHandlers as namedRegisterHandlers } from './index.mjs';
 
-// Jest ESM mocking
-const createMockLogger = () => ({
+const makeProcess = () => ({
+  on: jest.fn(),
+  off: jest.fn()
+});
+const makeLogger = () => ({
   error: jest.fn(),
   warn: jest.fn(),
   debug: jest.fn()
 });
 
-describe('registerHandlers (ESM)', () => {
-  let events;
-  let mockLogger;
-  let mockProcess;
-  let removeHandlers;
+describe('registerHandlers', () => {
+  test('registers all handlers and logs registration', () => {
+    const processObj = makeProcess();
+    const log = makeLogger();
+    const result = namedRegisterHandlers({ processObj, log });
 
-  beforeEach(() => {
-    events = {};
-    mockLogger = createMockLogger();
-    mockProcess = {
-      on: (event, handler) => { events[event] = handler; },
-      off: jest.fn()
-    };
-    ({ removeHandlers } = registerHandlers({ processObj: mockProcess, log: mockLogger }));
+    expect(processObj.on).toHaveBeenCalledTimes(3);
+    expect(processObj.on.mock.calls.map(([event]) => event)).toEqual([
+      'uncaughtException', 'unhandledRejection', 'warning'
+    ]);
+    expect(log.debug).toHaveBeenCalledWith('Exception handlers registered');
+    expect(result.removeHandlers).toEqual(expect.any(Function));
   });
 
-  test('should call logger.error on uncaughtException', () => {
-    events.uncaughtException(new Error('fail'));
-    expect(mockLogger.error).toHaveBeenCalledWith('Uncaught Exception', expect.objectContaining({
-      name: 'Error',
-      message: 'fail',
-      stack: expect.any(String),
-      error: expect.any(Error)
-    }));
+  test('logs each process event', () => {
+    const processObj = makeProcess();
+    const log = makeLogger();
+    namedRegisterHandlers({ processObj, log });
+    const handlers = Object.fromEntries(processObj.on.mock.calls.map(([event, handler]) => [event, handler]));
+    const error = new Error('boom');
+    const promise = Promise.resolve();
+    const warning = { name: 'Warning', message: 'notice' };
+
+    handlers.uncaughtException(error);
+    handlers.unhandledRejection('reason', promise);
+    handlers.warning(warning);
+
+    expect(log.error).toHaveBeenNthCalledWith(1, 'Uncaught Exception', { error });
+    expect(log.error).toHaveBeenNthCalledWith(2, 'Unhandled Rejection', { reason: 'reason', promise });
+    expect(log.warn).toHaveBeenCalledWith('Warning', { warning });
   });
 
-  test('should call logger.error on unhandledRejection', () => {
-    const err = new Error('reason');
-    events.unhandledRejection(err, 'promise');
-    expect(mockLogger.error).toHaveBeenCalledWith('Unhandled Rejection', expect.objectContaining({
-      reason: expect.objectContaining({
-        name: 'Error',
-        message: 'reason',
-        stack: expect.any(String),
-        error: expect.any(Error)
-      }),
-      promise: 'promise'
-    }));
+  test('removes all handlers', () => {
+    const processObj = makeProcess();
+    const log = makeLogger();
+    const { removeHandlers } = registerHandlers({ processObj, log });
+    removeHandlers();
+
+    expect(processObj.off).toHaveBeenCalledTimes(3);
+    expect(processObj.off.mock.calls.map(([event]) => event)).toEqual([
+      'uncaughtException', 'unhandledRejection', 'warning'
+    ]);
   });
 
-  test('should call logger.warn on warning', () => {
-    const warning = { name: 'Warn', message: 'msg', stack: 'stack' };
-    events.warning(warning);
-    expect(mockLogger.warn).toHaveBeenCalledWith('Warning', expect.objectContaining({
-      name: 'Warn',
-      message: 'msg',
-      stack: 'stack',
-      warning
-    }));
-  });
-
-  test('should provide a removeHandlers function', () => {
-    expect(typeof removeHandlers).toBe('function');
-  });
-});
-
-describe('default export (ESM)', () => {
-  let events;
-  let mockLogger;
-  let mockProcess;
-  let removeHandlers;
-
-  beforeEach(() => {
-    events = {};
-    mockLogger = createMockLogger();
-    mockProcess = {
-      on: (event, handler) => { events[event] = handler; },
-      off: jest.fn()
-    };
-    ({ removeHandlers } = defaultExport({ processObj: mockProcess, log: mockLogger }));
-  });
-
-  test('should call logger.error on uncaughtException', () => {
-    events.uncaughtException(new Error('fail'));
-    expect(mockLogger.error).toHaveBeenCalledWith('Uncaught Exception', expect.objectContaining({
-      name: 'Error',
-      message: 'fail',
-      stack: expect.any(String),
-      error: expect.any(Error)
-    }));
-  });
-
-  test('should call logger.error on unhandledRejection', () => {
-    const err = new Error('reason');
-    events.unhandledRejection(err, 'promise');
-    expect(mockLogger.error).toHaveBeenCalledWith('Unhandled Rejection', expect.objectContaining({
-      reason: expect.objectContaining({
-        name: 'Error',
-        message: 'reason',
-        stack: expect.any(String),
-        error: expect.any(Error)
-      }),
-      promise: 'promise'
-    }));
-  });
-
-  test('should call logger.warn on warning', () => {
-    const warning = { name: 'Warn', message: 'msg', stack: 'stack' };
-    events.warning(warning);
-    expect(mockLogger.warn).toHaveBeenCalledWith('Warning', expect.objectContaining({
-      name: 'Warn',
-      message: 'msg',
-      stack: 'stack',
-      warning
-    }));
-  });
-
-  test('should provide a removeHandlers function', () => {
-    expect(typeof removeHandlers).toBe('function');
+  test('supports defaults and the default export', () => {
+    const registration = registerHandlers({ processObj: makeProcess(), log: makeLogger() });
+    expect(registration.removeHandlers).toEqual(expect.any(Function));
+    expect(registerHandlers).toBe(namedRegisterHandlers);
   });
 });

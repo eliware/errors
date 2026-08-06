@@ -68,3 +68,28 @@ describe('registerHandlers', () => {
     registerHandlers().removeHandlers();
   });
 });
+
+test('supports selected events, idempotence, once listeners, and repeat cleanup', () => {
+  const processObj = { on: jest.fn(), once: jest.fn(), off: jest.fn() };
+  const log = makeLogger();
+  const first = registerHandlers({ processObj, log, events: ['warning', 'warning'], once: true });
+  const second = registerHandlers({ processObj, log, events: ['warning'] });
+  expect(second).toBe(first);
+  expect(processObj.once).toHaveBeenCalledTimes(1);
+  first.removeHandlers(); first.removeHandlers();
+  expect(processObj.off).toHaveBeenCalledTimes(1);
+  expect(first.removed).toBe(true);
+});
+
+test('validates event lists and supports abort signals', () => {
+  const processObj = makeProcess(); const log = makeLogger();
+  expect(() => registerHandlers({ processObj, log, events: 'warning' })).toThrow('events must be an array');
+  expect(() => registerHandlers({ processObj, log, events: ['invalid'] })).toThrow('at least one');
+  const controller = new AbortController();
+  const registration = registerHandlers({ processObj, log, events: ['warning'], signal: controller.signal });
+  controller.abort();
+  expect(registration.removed).toBe(true);
+  const aborted = new AbortController(); aborted.abort();
+  const already = registerHandlers({ processObj: makeProcess(), log, events: ['warning'], signal: aborted.signal });
+  expect(already.removed).toBe(true);
+});

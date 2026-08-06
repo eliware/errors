@@ -22,6 +22,8 @@
 
 - Handles uncaught exceptions, unhandled rejections, and warnings
 - Pluggable logger (defaults to [@eliware/log](https://www.npmjs.com/package/@eliware/log))
+- Idempotent registration with safe, repeatable cleanup
+- Selectable events, one-shot handlers, and AbortSignal cleanup
 - Easy to add/remove handlers for testability
 - ESM-only package with TypeScript declarations
 
@@ -56,9 +58,12 @@ Registers process-level exception handlers. Returns an object with a `removeHand
 - `options` (optional):
   - `processObj`: Process-like event target (default: `process`)
   - `log`: Logger with `error`, `warn`, and `debug` methods (default: [@eliware/log](https://www.npmjs.com/package/@eliware/log))
+  - `events`: Supported event names to register (default: all three)
+  - `once`: Use one-shot listeners when supported
+  - `signal`: AbortSignal that automatically removes handlers
 - **Returns:** `{ removeHandlers: () => void }`; call it to detach all three handlers.
 
-Each handler forwards the original event values to the logger, preserving error and promise identity for downstream consumers.
+Registration is idempotent per process-like object; repeated calls return the existing registration. Cleanup is safe to call repeatedly and removes the registration from the internal registry. Existing listeners are preserved. For production use, remember that handling `uncaughtException` can leave the process in an unsafe state; log it and shut down gracefully when appropriate.
 
 ## TypeScript
 

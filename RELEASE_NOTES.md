@@ -26,3 +26,7 @@
 ## 1.1.1 — 2025-12-08
 
 - Refreshed package metadata, dependencies, and lockfile.
+
+## 1.1.5 — 2026-08-06
+
+- Added `AGENTS.md` with development conventions, validation commands, API compatibility guidance, security notes, and release workflow rules.

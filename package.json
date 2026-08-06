@@ -1,7 +1,7 @@
 {
     "name": "@eliware/errors",
     "type": "module",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "description": "Process-level handlers for uncaught exceptions, unhandled rejections, and warnings.",
     "module": "index.mjs",
     "types": "index.d.ts",

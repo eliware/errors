@@ -60,4 +60,11 @@ describe('registerHandlers', () => {
     expect(registration.removeHandlers).toEqual(expect.any(Function));
     expect(registerHandlers).toBe(namedRegisterHandlers);
   });
+  test('covers default process and logger options', () => {
+    const fakeProcess = makeProcess();
+    registerHandlers({ processObj: fakeProcess }).removeHandlers();
+    const registration = registerHandlers({ log: makeLogger() });
+    registration.removeHandlers();
+    registerHandlers().removeHandlers();
+  });
 });

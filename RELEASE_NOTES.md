@@ -1,0 +1,28 @@
+# Release Notes
+
+## 1.1.4 — 2026-08-06
+
+- Modernized the package as an ESM-first process error-handler library.
+- Added idempotent registration per process-like object and repeat-safe cleanup via `removeHandlers()`.
+- Added selectable process events, one-shot listeners, and `AbortSignal`-based cleanup.
+- Preserved existing process listeners while supporting custom process-like objects and loggers.
+- Improved structured logging for uncaught exceptions, unhandled rejections, and warnings.
+- Updated TypeScript declarations, README documentation, and usage example.
+- Removed obsolete CommonJS entrypoints and tests.
+- Standardized Node.js 26 CI, linting, coverage commands, and AgentX ignore rules.
+- Updated dependencies and lockfile, including `@eliware/log` 1.1.9.
+
+## 1.1.3 — 2026-07-01
+
+- Refreshed package metadata and dependencies.
+- Regenerated the lockfile.
+
+## 1.1.2 — 2025-12-21
+
+- Updated the CommonJS and ESM implementations in parallel.
+- Refined package metadata and dependencies.
+- Regenerated the lockfile.
+
+## 1.1.1 — 2025-12-08
+
+- Refreshed package metadata, dependencies, and lockfile.

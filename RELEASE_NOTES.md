@@ -9,6 +9,10 @@
 - Updated the runtime dependency `@eliware/log` to 1.1.10.
 - Fixed coverage-gap filtering in the release validation workflow.
 
+## 1.1.5 — 2026-08-06
+
+- Added `AGENTS.md` with development conventions, validation commands, API compatibility guidance, security notes, and release workflow rules.
+
 ## 1.1.4 — 2026-08-06
 
 - Modernized the package as an ESM-first process error-handler library.
@@ -35,7 +39,3 @@
 ## 1.1.1 — 2025-12-08
 
 - Refreshed package metadata, dependencies, and lockfile.
-
-## 1.1.5 — 2026-08-06
-
-- Added `AGENTS.md` with development conventions, validation commands, API compatibility guidance, security notes, and release workflow rules.

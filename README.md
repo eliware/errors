@@ -9,11 +9,15 @@
 ## Table of Contents
 
 - [Features](#features)
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
   - [ESM Example](#esm-example)
   - [API](#api)
 - [TypeScript](#typescript)
+- [Errors / Troubleshooting](#errors--troubleshooting)
+- [Development](#development)
+- [Security](#security)
 - [Support](#support)
 - [License](#license)
 - [Links](#links)
@@ -26,6 +30,10 @@
 - Selectable events, one-shot handlers, and AbortSignal cleanup
 - Easy to add/remove handlers for testability
 - ESM-only package with TypeScript declarations
+
+## Requirements
+
+- Node.js 26 or newer
 
 ## Installation
 
@@ -45,8 +53,9 @@ registerHandlers();
 // Or with options:
 // registerHandlers({ processObj: process, log: customLogger });
 
-// Simulate an uncaught exception
-setTimeout(() => { throw new Error('Demo uncaught exception'); }, 1000);
+const registration = registerHandlers();
+console.log('Handlers registered.');
+registration.removeHandlers();
 ```
 
 ## API
@@ -79,6 +88,24 @@ export declare function registerHandlers(
 
 export default registerHandlers;
 ```
+
+## Errors / Troubleshooting
+
+The package only registers handlers; it does not terminate or restart the process. After an uncaught exception, log the failure and shut down gracefully when appropriate. Use a process-like object and custom logger in tests.
+
+## Development
+
+```bash
+npm test
+npm run test:gaps
+npm run lint
+npm run typecheck
+npm run pack
+```
+
+## Security
+
+Do not expose sensitive exception or rejection data through custom loggers. Review logger configuration and redact secrets before logging process errors.
 
 ## Support
 

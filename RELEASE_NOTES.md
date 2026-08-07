@@ -1,5 +1,10 @@
 # Release Notes
 
+## 1.1.6 — 2026-08-07
+
+- Updated the runtime dependency `@eliware/log` to 1.1.10.
+- Fixed coverage-gap filtering in the release validation workflow.
+
 ## 1.1.4 — 2026-08-06
 
 - Modernized the package as an ESM-first process error-handler library.

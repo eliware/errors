@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import registerHandlers, { registerHandlers as namedRegisterHandlers } from './index.mjs';
+import registerHandlers, { registerHandlers as namedRegisterHandlers } from '../index.mjs';
 
 const makeProcess = () => ({
   on: jest.fn(),

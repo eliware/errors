@@ -1,5 +1,9 @@
 # Release Notes
 
+## 1.1.7 — August 7, 2026
+
+- Published a follow-up release after the 1.1.6 npm publication completed before CI retry.
+
 ## 1.1.6 — 2026-08-07
 
 - Updated the runtime dependency `@eliware/log` to 1.1.10.

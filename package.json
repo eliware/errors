@@ -1,70 +1,70 @@
 {
-    "name": "@eliware/errors",
-    "type": "module",
-    "version": "1.1.5",
-    "description": "Process-level handlers for uncaught exceptions, unhandled rejections, and warnings.",
-    "module": "index.mjs",
-    "types": "index.d.ts",
-    "files": [
-        "index.mjs",
-        "index.d.ts",
-        "README.md",
-        "LICENSE"
-    ],
-    "exports": {
-        ".": {
-            "import": "./index.mjs",
-            "types": "./index.d.ts"
-        }
-    },
-    "scripts": {
-        "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent --coverage",
-        "test:gaps": "npm test -- --coverageReporters=text 2>&1 | awk '!/100%/'",
-        "lint": "npx oxlint ."
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/eliware/errors.git"
-    },
-    "keywords": [
-        "nodejs",
-        "error handling",
-        "process",
-        "uncaughtException",
-        "unhandledRejection",
-        "warning",
-        "process exit",
-        "exception handler",
-        "logger",
-        "logging",
-        "node error handler",
-        "node process events",
-        "graceful shutdown",
-        "testable error handler",
-        "@eliware/errors",
-        "@eliware/log"
-    ],
-    "author": "Eli Sterling, eliware.org <russell@eliware.org>",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/eliware/errors/issues"
-    },
-    "homepage": "https://github.com/eliware/errors#readme",
-    "devDependencies": {
-        "jest": "^30.4.2"
-    },
-    "jest": {
-        "testEnvironment": "node",
-        "testMatch": [
-            "**/?(*.)+(spec|test).[jt]s?(x)",
-            "**/?(*.)+(spec|test).mjs"
-        ]
-    },
-    "dependencies": {
-        "@eliware/log": "^1.1.9"
-    },
-    "engines": {
-        "node": ">=26"
-    },
-    "sideEffects": false
+  "name": "@eliware/errors",
+  "type": "module",
+  "version": "1.1.5",
+  "description": "Process-level handlers for uncaught exceptions, unhandled rejections, and warnings.",
+  "module": "index.mjs",
+  "types": "index.d.ts",
+  "files": [
+    "index.mjs",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "types": "./index.d.ts"
+    }
+  },
+  "scripts": {
+    "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent --coverage",
+    "test:gaps": "npm test -- --coverageReporters=text 2>&1 | awk -F'|' 'NF >= 6 && $2 ~ /[0-9]/ && !($2 ~ /^[[:space:]]*100[[:space:]]*$/ && $3 ~ /^[[:space:]]*100[[:space:]]*$/ && $4 ~ /^[[:space:]]*100[[:space:]]*$/ && $5 ~ /^[[:space:]]*100[[:space:]]*$/)'",
+    "lint": "npx oxlint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliware/errors.git"
+  },
+  "keywords": [
+    "nodejs",
+    "error handling",
+    "process",
+    "uncaughtException",
+    "unhandledRejection",
+    "warning",
+    "process exit",
+    "exception handler",
+    "logger",
+    "logging",
+    "node error handler",
+    "node process events",
+    "graceful shutdown",
+    "testable error handler",
+    "@eliware/errors",
+    "@eliware/log"
+  ],
+  "author": "Eli Sterling, eliware.org <russell@eliware.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eliware/errors/issues"
+  },
+  "homepage": "https://github.com/eliware/errors#readme",
+  "devDependencies": {
+    "jest": "^30.4.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/?(*.)+(spec|test).[jt]s?(x)",
+      "**/?(*.)+(spec|test).mjs"
+    ]
+  },
+  "dependencies": {
+    "@eliware/log": "^1.1.9"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "sideEffects": false
 }

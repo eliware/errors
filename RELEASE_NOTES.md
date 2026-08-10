@@ -1,5 +1,11 @@
 # Release Notes
 
+## 1.1.9 — 2026-08-10
+
+- Improved process-like object validation and cleanup compatibility.
+- Reject unsupported event selections and roll back registrations when logging fails.
+- Added coverage for cleanup, validation, and rollback behavior.
+
 ## 1.1.7 — August 7, 2026
 
 - Published a follow-up release after the 1.1.6 npm publication completed before CI retry.

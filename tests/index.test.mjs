@@ -93,3 +93,15 @@ test('validates event lists and supports abort signals', () => {
   const already = registerHandlers({ processObj: makeProcess(), log, events: ['warning'], signal: aborted.signal });
   expect(already.removed).toBe(true);
 });
+
+test('cleans up without off and allows re-registration after abort cleanup', () => {
+  const processObj = { on: jest.fn() };
+  const first = registerHandlers({ processObj, log: makeLogger(), events: ['warning'] });
+  expect(() => first.removeHandlers()).not.toThrow();
+  const second = registerHandlers({ processObj, log: makeLogger(), events: ['warning'] });
+  expect(second).not.toBe(first);
+});
+
+test('rejects mixed supported and unsupported events', () => {
+  expect(() => registerHandlers({ processObj: makeProcess(), events: ['warning', 'typo'] })).toThrow('Unsupported process event');
+});

@@ -70,7 +70,7 @@ Registers process-level exception handlers. Returns an object with a `removeHand
   - `events`: Supported event names to register (default: all three)
   - `once`: Use one-shot listeners when supported
   - `signal`: AbortSignal that automatically removes handlers
-- **Returns:** `{ removeHandlers: () => void }`; call it to detach all three handlers.
+- **Returns:** `{ removeHandlers: () => void, removed: boolean }`; call it to detach the selected handlers.
 
 Registration is idempotent per process-like object; repeated calls return the existing registration. Cleanup is safe to call repeatedly and removes the registration from the internal registry. Existing listeners are preserved. For production use, remember that handling `uncaughtException` can leave the process in an unsafe state; log it and shut down gracefully when appropriate.
 

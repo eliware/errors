@@ -84,7 +84,7 @@ test('supports selected events, idempotence, once listeners, and repeat cleanup'
 test('validates event lists and supports abort signals', () => {
   const processObj = makeProcess(); const log = makeLogger();
   expect(() => registerHandlers({ processObj, log, events: 'warning' })).toThrow('events must be an array');
-  expect(() => registerHandlers({ processObj, log, events: [] })).toThrow('at least one');
+  expect(() => registerHandlers({ processObj: makeProcess(), log, events: [] })).toThrow('at least one');
   expect(() => registerHandlers({ processObj, log, events: ['invalid'] })).toThrow('at least one');
   const controller = new AbortController();
   const registration = registerHandlers({ processObj, log, events: ['warning'], signal: controller.signal });

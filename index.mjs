@@ -8,12 +8,11 @@ function normalizeEvents(events) {
   if (!Array.isArray(events)) throw new TypeError('events must be an array');
   const allowed = new Set(defaultEvents);
   const requested = [...new Set(events)];
+  if (!requested.length) throw new RangeError('events must include at least one supported process event');
   const unsupported = requested.filter(event => !allowed.has(event));
   if (unsupported.length === requested.length) throw new RangeError('events must include at least one supported process event');
   if (unsupported.length) throw new RangeError(`Unsupported process event(s): ${unsupported.join(', ')}`);
-  const selected = requested;
-  if (!selected.length) throw new RangeError('events must include at least one supported process event');
-  return selected;
+  return requested;
 }
 function eventLog(log, event, ...args) {
   if (event === 'warning') return log.warn('Warning', { warning: args[0] });
@@ -36,7 +35,7 @@ export const registerHandlers = ({ processObj = process, log = logger, events, o
     if (registration.removed) return;
     registration.removed = true;
     for (const event of selected) processObj[remove](event, handlers[event]);
-    if (registrations.get(processObj) === registration) registrations.delete(processObj);
+    registrations.delete(processObj);
   }, removed: false };
   registrations.set(processObj, registration);
   if (signal) {

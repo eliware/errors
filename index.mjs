@@ -26,15 +26,16 @@ export const registerHandlers = ({ processObj = process, log = logger, events, o
   const selected = normalizeEvents(events);
   const existing = registrations.get(processObj);
   if (existing) return existing;
+  if (typeof processObj.on !== 'function') throw new TypeError('processObj must provide an on method');
+  const remove = typeof processObj.off === 'function' ? 'off' : 'removeListener';
+  if (typeof processObj[remove] !== 'function') throw new TypeError('processObj must provide an off or removeListener method');
   const handlers = Object.fromEntries(selected.map(event => [event, (...args) => eventLog(log, event, ...args)]));
   const add = once && typeof processObj.once === 'function' ? 'once' : 'on';
   for (const event of selected) processObj[add](event, handlers[event]);
   const registration = { removeHandlers() {
     if (registration.removed) return;
     registration.removed = true;
-    if (typeof processObj.off === 'function') {
-      for (const event of selected) processObj.off(event, handlers[event]);
-    }
+    for (const event of selected) processObj[remove](event, handlers[event]);
     if (registrations.get(processObj) === registration) registrations.delete(processObj);
   }, removed: false };
   registrations.set(processObj, registration);
@@ -42,7 +43,12 @@ export const registerHandlers = ({ processObj = process, log = logger, events, o
     if (signal.aborted) registration.removeHandlers();
     else signal.addEventListener('abort', registration.removeHandlers, { once: true });
   }
-  log.debug('Exception handlers registered');
+  try {
+    log.debug('Exception handlers registered');
+  } catch (error) {
+    registration.removeHandlers();
+    throw error;
+  }
   return registration;
 };
 

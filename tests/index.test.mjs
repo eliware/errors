@@ -84,6 +84,7 @@ test('supports selected events, idempotence, once listeners, and repeat cleanup'
 test('validates event lists and supports abort signals', () => {
   const processObj = makeProcess(); const log = makeLogger();
   expect(() => registerHandlers({ processObj, log, events: 'warning' })).toThrow('events must be an array');
+  expect(() => registerHandlers({ processObj, log, events: [] })).toThrow('at least one');
   expect(() => registerHandlers({ processObj, log, events: ['invalid'] })).toThrow('at least one');
   const controller = new AbortController();
   const registration = registerHandlers({ processObj, log, events: ['warning'], signal: controller.signal });
@@ -94,12 +95,27 @@ test('validates event lists and supports abort signals', () => {
   expect(already.removed).toBe(true);
 });
 
-test('cleans up without off and allows re-registration after abort cleanup', () => {
-  const processObj = { on: jest.fn() };
+test('supports removeListener cleanup', () => {
+  const processObj = { on: jest.fn(), removeListener: jest.fn() };
   const first = registerHandlers({ processObj, log: makeLogger(), events: ['warning'] });
-  expect(() => first.removeHandlers()).not.toThrow();
-  const second = registerHandlers({ processObj, log: makeLogger(), events: ['warning'] });
-  expect(second).not.toBe(first);
+  first.removeHandlers();
+  expect(processObj.removeListener).toHaveBeenCalledWith('warning', expect.any(Function));
+});
+
+test('rejects process-like objects without on support', () => {
+  expect(() => registerHandlers({ processObj: {}, log: makeLogger() })).toThrow('on method');
+});
+
+test('rejects process-like objects without cleanup support', () => {
+  expect(() => registerHandlers({ processObj: { on: jest.fn() }, log: makeLogger() }))
+    .toThrow('off or removeListener');
+});
+
+test('rolls back when registration logging fails', () => {
+  const processObj = makeProcess();
+  const log = { ...makeLogger(), debug: jest.fn(() => { throw new Error('log failed'); }) };
+  expect(() => registerHandlers({ processObj, log, events: ['warning'] })).toThrow('log failed');
+  expect(processObj.off).toHaveBeenCalledWith('warning', expect.any(Function));
 });
 
 test('rejects mixed supported and unsupported events', () => {

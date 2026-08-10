@@ -70,7 +70,7 @@ Registers process-level exception handlers. Returns an object with a `removeHand
   - `events`: Supported event names to register (default: all three)
   - `once`: Use one-shot listeners when supported
   - `signal`: AbortSignal that automatically removes handlers
-- **Returns:** `{ removeHandlers: () => void, removed: boolean }`; call it to detach the selected handlers.
+- **Returns:** `{ removeHandlers: () => void, removed: boolean }`; call it to detach the selected handlers. `processObj` must provide `on` plus `off` or `removeListener`.
 
 Registration is idempotent per process-like object; repeated calls return the existing registration. Cleanup is safe to call repeatedly and removes the registration from the internal registry. Existing listeners are preserved. For production use, remember that handling `uncaughtException` can leave the process in an unsafe state; log it and shut down gracefully when appropriate.
 
@@ -81,10 +81,22 @@ Type definitions are included:
 ```ts
 export declare function registerHandlers(
   options?: {
-    processObj?: NodeJS.Process;
-    log?: typeof import('@eliware/log')
+    processObj?: ProcessLike;
+    log?: typeof import('@eliware/log');
+    events?: ProcessEvent[];
+    once?: boolean;
+    signal?: AbortSignal;
   }
-): { removeHandlers: () => void };
+): { removeHandlers: () => void; readonly removed: boolean };
+
+interface ProcessLike {
+  on(event: string, listener: (...args: unknown[]) => void): unknown;
+  once?(event: string, listener: (...args: unknown[]) => void): unknown;
+  off?(event: string, listener: (...args: unknown[]) => void): unknown;
+  removeListener?(event: string, listener: (...args: unknown[]) => void): unknown;
+}
+
+type ProcessEvent = 'uncaughtException' | 'unhandledRejection' | 'warning';
 
 export default registerHandlers;
 ```

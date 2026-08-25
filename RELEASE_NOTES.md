@@ -1,5 +1,15 @@
 # Release Notes
 
+## 2.0.0 — Unreleased
+
+- Modernized validation around the shared `@eliware/test` harness.
+- Added cross-platform CI validation for Node.js 26 on Ubuntu and Windows,
+  including production dependency auditing and package checks.
+- Added explicit public publish configuration and included release notes in the
+  package contents.
+- Breaking: direct Jest/Oxlint scripts and the standalone coverage-gap command
+  were replaced by the shared test and lint harness.
+
 ## 1.1.9 — 2026-08-10
 
 - Improved process-like object validation and cleanup compatibility.

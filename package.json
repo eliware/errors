@@ -9,8 +9,10 @@
         "index.d.ts",
         "README.md",
         "LICENSE",
+        "RELEASE_NOTES.md",
         "examples"
     ],
+    "publishConfig": { "access": "public" },
     "exports": {
         ".": {
             "import": "./index.mjs",
@@ -18,9 +20,8 @@
         }
     },
     "scripts": {
-        "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent --coverage",
-        "test:gaps": "node scripts/check-coverage.mjs",
-        "lint": "npx oxlint .",
+        "test": "eliware-test",
+        "lint": "eliware-test --lint",
         "typecheck": "tsc --project tsconfig.json",
         "pack": "npm pack --dry-run"
     },
@@ -53,15 +54,8 @@
     },
     "homepage": "https://github.com/eliware/errors#readme",
     "devDependencies": {
-        "jest": "^30.4.2",
+        "@eliware/test": "^2.0.0",
         "typescript": "^7.0.2"
-    },
-    "jest": {
-        "testEnvironment": "node",
-        "testMatch": [
-            "**/?(*.)+(spec|test).[jt]s?(x)",
-            "**/?(*.)+(spec|test).mjs"
-        ]
     },
     "dependencies": {
         "@eliware/log": "^1.1.12"

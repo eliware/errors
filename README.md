@@ -18,6 +18,8 @@
 - [Errors / Troubleshooting](#errors--troubleshooting)
 - [Development](#development)
 - [Security](#security)
+- [Operations](#operations)
+- [Validation](#validation)
 - [Support](#support)
 - [License](#license)
 - [Links](#links)
@@ -116,6 +118,22 @@ npm run pack
 ## Security
 
 Do not expose sensitive exception or rejection data through custom loggers. Review logger configuration and redact secrets before logging process errors.
+
+## Operations
+
+This package does not terminate or restart the process. An `uncaughtException`
+handler should log the failure and shut down gracefully when appropriate;
+continuing after an uncaught exception may leave application state unsafe.
+
+## Validation
+
+```bash
+npm test
+npm run lint
+npm run typecheck
+npm audit --omit=dev --audit-level=moderate
+npm run pack
+```
 
 ## Support
 

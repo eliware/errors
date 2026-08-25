@@ -1,8 +1,9 @@
 # Release Notes
 
-## 2.0.0 — Unreleased
+## 2.0.0 — 2026-08-25
 
 - Modernized validation around the shared `@eliware/test` harness.
+- Updated the runtime dependency to `@eliware/log` 2.0.0.
 - Added cross-platform CI validation for Node.js 26 on Ubuntu and Windows,
   including production dependency auditing and package checks.
 - Added explicit public publish configuration and included release notes in the

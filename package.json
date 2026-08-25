@@ -12,7 +12,9 @@
         "RELEASE_NOTES.md",
         "examples"
     ],
-    "publishConfig": { "access": "public" },
+    "publishConfig": {
+        "access": "public"
+    },
     "exports": {
         ".": {
             "import": "./index.mjs",
@@ -58,7 +60,7 @@
         "typescript": "^7.0.2"
     },
     "dependencies": {
-        "@eliware/log": "^1.1.12"
+        "@eliware/log": "^2.0.0"
     },
     "engines": {
         "node": ">=26"

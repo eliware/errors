@@ -48,12 +48,8 @@ npm install @eliware/errors
 ```js
 import { registerHandlers } from '@eliware/errors';
 
-registerHandlers();
-
 // Or with options:
-// registerHandlers({ processObj: process, log: customLogger });
-
-const registration = registerHandlers();
+const registration = registerHandlers({ processObj: process, log: customLogger });
 console.log('Handlers registered.');
 registration.removeHandlers();
 ```
@@ -73,6 +69,8 @@ Registers process-level exception handlers. Returns an object with a `removeHand
 - **Returns:** `{ removeHandlers: () => void, removed: boolean }`; call it to detach the selected handlers. `processObj` must provide `on` plus `off` or `removeListener`.
 
 Registration is idempotent per process-like object; repeated calls return the existing registration. Cleanup is safe to call repeatedly and removes the registration from the internal registry. Existing listeners are preserved. For production use, remember that handling `uncaughtException` can leave the process in an unsafe state; log it and shut down gracefully when appropriate.
+
+Logger failures and listener-registration/removal failures are propagated to the caller. If registration fails partway through, listeners already added by this package are rolled back.
 
 ## TypeScript
 

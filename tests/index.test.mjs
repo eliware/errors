@@ -121,3 +121,27 @@ test('rolls back when registration logging fails', () => {
 test('rejects mixed supported and unsupported events', () => {
   expect(() => registerHandlers({ processObj: makeProcess(), events: ['warning', 'typo'] })).toThrow('Unsupported process event');
 });
+
+test('rolls back listeners when registration fails partway through', () => {
+  const processObj = { on: jest.fn().mockImplementationOnce(() => {}).mockImplementationOnce(() => { throw new Error('add failed'); }), off: jest.fn() };
+  expect(() => registerHandlers({ processObj, log: makeLogger() })).toThrow('add failed');
+  expect(processObj.off).toHaveBeenCalledWith('uncaughtException', expect.any(Function));
+});
+
+test('attempts every removal and reports removal failures', () => {
+  const processObj = makeProcess();
+  processObj.off.mockImplementationOnce(() => { throw new Error('remove failed'); });
+  const registration = registerHandlers({ processObj, log: makeLogger() });
+  expect(() => registration.removeHandlers()).toThrow('remove failed');
+  expect(processObj.off).toHaveBeenCalledTimes(3);
+  expect(registration.removed).toBe(true);
+  registration.removeHandlers();
+});
+
+test('removes an abort listener when cleaned up manually', () => {
+  const controller = new AbortController();
+  const removeEventListener = jest.spyOn(controller.signal, 'removeEventListener');
+  const registration = registerHandlers({ processObj: makeProcess(), log: makeLogger(), events: ['warning'], signal: controller.signal });
+  registration.removeHandlers();
+  expect(removeEventListener).toHaveBeenCalledWith('abort', expect.any(Function));
+});

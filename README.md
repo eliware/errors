@@ -109,7 +109,6 @@ The package only registers handlers; it does not terminate or restart the proces
 
 ```bash
 npm test
-npm run test:gaps
 npm run lint
 npm run typecheck
 npm run pack

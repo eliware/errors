@@ -1,5 +1,14 @@
 # Release Notes
 
+## 2.1.0 — 2026-09-02
+
+- Decomposed handler registration into focused constants, validation, logging,
+  registration, and cleanup modules while preserving the root public entrypoint.
+- Hardened rollback and cleanup behavior for listener, logger, signal, and
+  one-shot handler failures.
+- Added focused module-level tests while retaining public API coverage.
+- Updated `@eliware/log` to 2.1.0 and `@eliware/test` to 2.3.1.
+
 ## 2.0.0 — 2026-08-25
 
 - Modernized validation around the shared `@eliware/test` harness.

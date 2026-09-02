@@ -1,7 +1,7 @@
 {
     "name": "@eliware/errors",
     "type": "module",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Process-level handlers for uncaught exceptions, unhandled rejections, and warnings.",
     "types": "index.d.ts",
     "files": [
@@ -49,7 +49,9 @@
         "testable error handler",
         "@eliware/errors",
         "@eliware/log",
-        "esm"
+        "esm",
+        "process-handler",
+        "error-handling"
     ],
     "author": "Eli Sterling, eliware.org <russell@eliware.org>",
     "license": "MIT",

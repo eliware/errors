@@ -14,6 +14,7 @@
 - [Usage](#usage)
   - [ESM Example](#esm-example)
   - [API](#api)
+- [Configuration](#configuration)
 - [TypeScript](#typescript)
 - [Errors / Troubleshooting](#errors--troubleshooting)
 - [Development](#development)
@@ -50,10 +51,22 @@ npm install @eliware/errors
 ```js
 import { registerHandlers } from '@eliware/errors';
 
-// Or with options:
 const registration = registerHandlers();
 console.log('Handlers registered.');
 registration.removeHandlers();
+```
+
+For a long-running application, keep the returned registration and remove it
+during shutdown. Options can select events, use one-shot listeners, inject a
+logger or process-like object for testing, and connect cleanup to an
+`AbortSignal`.
+
+```js
+const shutdownController = new AbortController();
+const registration = registerHandlers({
+  events: ['uncaughtException', 'unhandledRejection'],
+  signal: shutdownController.signal
+});
 ```
 
 ## API
@@ -73,6 +86,14 @@ Registers process-level exception handlers. Returns an object with a `removeHand
 Registration is idempotent per process-like object; repeated calls return the existing registration. Cleanup is safe to call repeatedly and removes the registration from the internal registry. Existing listeners are preserved. For production use, remember that handling `uncaughtException` can leave the process in an unsafe state; log it and shut down gracefully when appropriate.
 
 Logger failures and listener-registration/removal failures are propagated to the caller. If registration fails partway through, listeners already added by this package are rolled back.
+
+## Configuration
+
+No environment variables or configuration files are required. Configure the
+library through the `registerHandlers(options)` argument. A custom logger must
+provide `error(message, metadata)`, `warn(message, metadata)`, and
+`debug(message)` methods. A process-like object must provide `on()` and either
+`off()` or `removeListener()`.
 
 ## TypeScript
 
@@ -111,6 +132,7 @@ The package only registers handlers; it does not terminate or restart the proces
 npm test
 npm run lint
 npm run typecheck
+npm audit --omit=dev --audit-level=moderate
 npm run pack
 ```
 

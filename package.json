@@ -47,7 +47,8 @@
         "graceful shutdown",
         "testable error handler",
         "@eliware/errors",
-        "@eliware/log"
+        "@eliware/log",
+        "esm"
     ],
     "author": "Eli Sterling, eliware.org <russell@eliware.org>",
     "license": "MIT",

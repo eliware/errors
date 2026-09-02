@@ -51,7 +51,7 @@ npm install @eliware/errors
 import { registerHandlers } from '@eliware/errors';
 
 // Or with options:
-const registration = registerHandlers({ processObj: process, log: customLogger });
+const registration = registerHandlers();
 console.log('Handlers registered.');
 registration.removeHandlers();
 ```

@@ -1,5 +1,7 @@
 # [![eliware.org](https://eliware.org/logos/brand.png)](https://discord.gg/M6aTR9eTwN)
 
+Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [examples](examples/README.md)
+
 ## @eliware/errors [![npm version](https://img.shields.io/npm/v/@eliware/errors.svg)](https://www.npmjs.com/package/@eliware/errors)[![license](https://img.shields.io/github/license/eliware/errors.svg)](LICENSE)[![build status](https://github.com/eliware/errors/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eliware/errors/actions)
 
 > Minimal ESM-only Node.js process-level handler for uncaught exceptions, unhandled rejections, and warnings.
@@ -81,11 +83,51 @@ Registers process-level exception handlers. Returns an object with a `removeHand
   - `events`: Supported event names to register (default: all three)
   - `once`: Use one-shot listeners when supported
   - `signal`: AbortSignal that automatically removes handlers
-- **Returns:** `{ removeHandlers: () => void, removed: boolean }`; call it to detach the selected handlers. `processObj` must provide `on` plus `off` or `removeListener`.
+  - **Returns:** `{ removeHandlers: () => void, removed: boolean }`; call it to detach the selected handlers. `removed` is runtime-mutated from `false` to `true` after successful cleanup and should be treated as read-only by consumers.
+    - Each event is removed once.
+    - If an event or abort-listener removal throws, successful removals are not retried; a later call retries only failed removals.
+    - A failed event cleanup leaves `removed` set to `false`; inspect the thrown error and retry `removeHandlers()` after correcting the target.
+    - `processObj` methods are called with `processObj` as their receiver. The target must provide callable `on` plus `off` or `removeListener`; `once` is optional and is used only when `once: true`. Synchronous callbacks from custom `once()` or `addEventListener()` implementations are supported; cleanup is reconciled after setup completes.
+    - `log` must provide callable `error`, `warn`, and `debug` methods; malformed loggers are rejected during registration.
 
-Registration is idempotent per process-like object; repeated calls return the existing registration. Cleanup is safe to call repeatedly and removes the registration from the internal registry. Existing listeners are preserved. For production use, remember that handling `uncaughtException` can leave the process in an unsafe state; log it and shut down gracefully when appropriate.
+Registration is idempotent per process-like object; repeated calls return the existing registration. Cleanup is safe to call repeatedly and removes the registration from the internal registry. The returned `removed` property becomes `true` after successful cleanup, including one-shot and AbortSignal cleanup. Existing listeners are preserved. For production use, remember that handling `uncaughtException` can leave the process in an unsafe state; log it and shut down gracefully when appropriate.
 
-Logger failures and listener-registration/removal failures are propagated to the caller. If registration fails partway through, listeners already added by this package are rolled back.
+Idempotence uses first-registration-wins semantics: options supplied by a later
+call are not applied to an existing registration. Call `removeHandlers()`
+before registering again with different options.
+This applies to later `events`, `log`, `once`, and `signal` options; they are
+ignored until the existing registration is removed.
+
+The `signal` option removes handlers when the signal aborts; retain the
+registration or controller when explicit lifecycle control is needed:
+
+```js
+const controller = new AbortController();
+const registration = registerHandlers({ signal: controller.signal });
+controller.abort();
+console.log(registration.removed); // true
+```
+
+For graceful shutdown, keep the registration and remove it from the shutdown
+hook:
+
+```js
+const registration = registerHandlers();
+process.once('SIGTERM', () => registration.removeHandlers());
+```
+
+Logger failures and listener-registration/removal failures are propagated to the caller. If registration fails partway through, listeners already added by this package are rolled back. Event-handler logger failures also propagate; custom loggers should handle their own transport failures so they do not obscure the original process event.
+If rollback itself fails during setup, the original error remains the thrown error
+and the cleanup failure is available as `error.rollbackError`; if one-shot handler
+cleanup fails after a logger error, it is available as `error.cleanupError`.
+These secondary properties are best-effort and are unavailable when the primary
+thrown value is primitive or non-extensible.
+When rollback fails, the registration remains in the internal registry so the
+returned handle can be retried; later registration calls reuse that handle.
+Because setup throws before returning its normal handle, the recovery handle is
+also available as `error.registration` when the thrown error is extensible.
+If abort-listener removal fails, the same retry rule applies: `removed` remains
+`false` and a later `removeHandlers()` retries the failed signal cleanup.
 
 ## Configuration
 
@@ -100,31 +142,16 @@ provide `error(message, metadata)`, `warn(message, metadata)`, and
 Type definitions are included:
 
 ```ts
-export declare function registerHandlers(
-  options?: {
-    processObj?: ProcessLike;
-    log?: typeof import('@eliware/log');
-    events?: ProcessEvent[];
-    once?: boolean;
-    signal?: AbortSignal;
-  }
-): { removeHandlers: () => void; readonly removed: boolean };
+import registerHandlers, { type RegisteredHandlers } from '@eliware/errors';
 
-interface ProcessLike {
-  on(event: string, listener: (...args: unknown[]) => void): unknown;
-  once?(event: string, listener: (...args: unknown[]) => void): unknown;
-  off?(event: string, listener: (...args: unknown[]) => void): unknown;
-  removeListener?(event: string, listener: (...args: unknown[]) => void): unknown;
-}
-
-type ProcessEvent = 'uncaughtException' | 'unhandledRejection' | 'warning';
-
-export default registerHandlers;
+const registration: RegisteredHandlers = registerHandlers({ events: ['warning'] });
 ```
+
+`removeHandlers()` returns `void` when cleanup succeeds and throws if the process-like object rejects a removal; call it again to retry failed removals.
 
 ## Errors / Troubleshooting
 
-The package only registers handlers; it does not terminate or restart the process. After an uncaught exception, log the failure and shut down gracefully when appropriate. Use a process-like object and custom logger in tests.
+The package only registers handlers; it does not terminate or restart the process. After an uncaught exception, log the failure and shut down gracefully when appropriate. Because logger failures propagate from event handlers, production loggers should be reliable and applications should have a shutdown path that does not depend on logging succeeding. Use a process-like object and custom logger in tests.
 
 ## Development
 
@@ -138,7 +165,11 @@ npm run pack
 
 ## Security
 
-Do not expose sensitive exception or rejection data through custom loggers. Review logger configuration and redact secrets before logging process errors.
+The default logger receives sanitized error metadata (`{ name: 'Error', type:
+'Error' }`), warning type metadata, and only the rejection reason type. Custom
+loggers control any additional metadata and redaction and can bypass the
+library's sanitized defaults. Do not pass raw event values or secrets through
+custom logger configuration.
 
 ## Operations
 
@@ -147,6 +178,10 @@ handler should log the failure and shut down gracefully when appropriate;
 continuing after an uncaught exception may leave application state unsafe.
 
 ## Validation
+
+Run all of these checks locally before committing; they are the package's
+recommended validation suite. Release automation should provide audit and
+package-artifact evidence separately:
 
 ```bash
 npm test

@@ -1,15 +1,23 @@
 import type logger from '@eliware/log';
 
 export type ProcessEvent = 'uncaughtException' | 'unhandledRejection' | 'warning';
-export interface ProcessLike {
-  on(event: string, listener: (...args: unknown[]) => void): unknown;
-  once?(event: string, listener: (...args: unknown[]) => void): unknown;
-  off?(event: string, listener: (...args: unknown[]) => void): unknown;
-  removeListener?(event: string, listener: (...args: unknown[]) => void): unknown;
+export type ProcessListener = (...args: unknown[]) => void;
+export interface Logger {
+  error(message: string, metadata: unknown): unknown;
+  warn(message: string, metadata: unknown): unknown;
+  debug(message: string): unknown;
 }
+export type ProcessLike = {
+  on(event: ProcessEvent, listener: ProcessListener): unknown;
+  once?(event: ProcessEvent, listener: ProcessListener): unknown;
+} & ({
+  off(event: ProcessEvent, listener: ProcessListener): unknown;
+} | {
+  removeListener(event: ProcessEvent, listener: ProcessListener): unknown;
+});
 export interface RegisterHandlersOptions {
   processObj?: ProcessLike;
-  log?: typeof logger;
+  log?: Logger;
   events?: ProcessEvent[];
   once?: boolean;
   signal?: AbortSignal;

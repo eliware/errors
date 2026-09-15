@@ -60,11 +60,11 @@
     },
     "homepage": "https://github.com/eliware/errors#readme",
     "devDependencies": {
-        "@eliware/test": "^2.3.1",
+        "@eliware/test": "^5.0.0",
         "typescript": "^7.0.2"
     },
     "dependencies": {
-        "@eliware/log": "^2.1.0"
+        "@eliware/log": "^2.4.0"
     },
     "engines": {
         "node": ">=26"

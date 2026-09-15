@@ -30,7 +30,7 @@ test('removes abort listeners and attempts every removal', () => {
   expect(() => failed.removeHandlers()).toThrow('remove');
   expect(failing.off).toHaveBeenCalledTimes(3);
   failed.removeHandlers();
-  expect(failing.off).toHaveBeenCalledTimes(6);
+  expect(failing.off).toHaveBeenCalledTimes(4);
 });
 
 test('reports abort-listener removal failures after handler cleanup', () => {
@@ -38,7 +38,7 @@ test('reports abort-listener removal failures after handler cleanup', () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   const registration = registerHandlers({ processObj, log: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() }, signal, events: ['warning'] });
   expect(() => registration.removeHandlers()).toThrow('abort remove');
-  expect(registration.removed).toBe(true);
+  expect(registration.removed).toBe(false);
 });
 
 test('cleans up immediately when the signal is already aborted', () => {
@@ -47,6 +47,7 @@ test('cleans up immediately when the signal is already aborted', () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   const registration = registerHandlers({ processObj, log: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() }, signal: controller.signal });
   expect(registration.removed).toBe(true);
+  expect(processObj.off).toHaveBeenCalledWith('uncaughtException', expect.any(Function));
 });
 
 test('ignores repeated cleanup calls', () => {

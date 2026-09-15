@@ -17,3 +17,9 @@ export function validateProcessObject(processObj) {
   if (typeof processObj[remove] !== 'function') throw new TypeError('processObj must provide an off or removeListener method');
   return remove;
 }
+
+export function validateLogger(log) {
+  for (const method of ['error', 'warn', 'debug']) {
+    if (!log || typeof log[method] !== 'function') throw new TypeError(`log must provide a ${method} method`);
+  }
+}

@@ -11,7 +11,7 @@ export function installHandlers({
   registrations,
   fired,
   oneShot,
-  cleanupPending,
+  isCleanupPending,
   markSetupComplete,
 }) {
   const attachedEvents = new Set();
@@ -22,7 +22,7 @@ export function installHandlers({
       addedEvents.add(event);
     }
     markSetupComplete();
-    if (cleanupPending || (oneShot && fired.size === selected.length))
+    if (isCleanupPending() || (oneShot && fired.size === selected.length))
       registration.removeHandlers();
     registration.ready = true;
   } catch (error) {

@@ -2,9 +2,9 @@ import logger from "@eliware/log";
 import { defaultEvents } from "./constants.mjs";
 import { normalizeEvents, validateLogger, validateProcessObject } from "./validation.mjs";
 import { createCleanup } from "./cleanup.mjs";
-import { createEventHandler } from "./event-handler.mjs";
-import { attachFailure } from "./failure.mjs";
+import { createEventHandlers } from "./event-handlers.mjs";
 import { createRegistrationLifecycle } from "./registration-lifecycle.mjs";
+import { createRegistrationState } from "./registration-state.mjs";
 import { installHandlers } from "./setup.mjs";
 import { finalizeRegistration } from "./finalize.mjs";
 
@@ -29,31 +29,9 @@ export function registerHandlers({
   }
   const add = once && typeof processObj.once === "function" ? "once" : "on";
   const oneShot = once;
-  const fired = new Set();
-  const detachedEvents = new Set();
-  const addedEvents = new Set();
-  let setupComplete = false;
-  let cleanupPending = false;
-  const registration = { removed: false, ready: false };
-  const handlers = {};
-  for (const event of selected) {
-    handlers[event] = createEventHandler({
-      event,
-      log,
-      oneShot,
-      fired,
-      detachedEvents,
-      addedEvents,
-      add,
-      selected,
-      registration,
-      isSetupComplete: () => setupComplete,
-      setCleanupPending: () => {
-        cleanupPending = true;
-      },
-      attachFailure,
-    });
-  }
+  const state = createRegistrationState();
+  const { registration, fired, detachedEvents, addedEvents } = state;
+  const handlers = createEventHandlers({ selected, log, oneShot, add, state });
   registrations.set(processObj, registration);
   const cleanup = createCleanup({
     processObj,
@@ -66,7 +44,6 @@ export function registerHandlers({
     detachedEvents,
   });
   registration.removeHandlers = cleanup.removeHandlers;
-  cleanup.setAbortListener(registration.removeHandlers);
   installHandlers({
     processObj,
     add,
@@ -78,10 +55,8 @@ export function registerHandlers({
     registrations,
     fired,
     oneShot,
-    cleanupPending,
-    markSetupComplete: () => {
-      setupComplete = true;
-    },
+    isCleanupPending: () => state.cleanupPending,
+    markSetupComplete: state.markSetupComplete,
   });
   return finalizeRegistration({ signal, log, registration, registrations, processObj });
 }

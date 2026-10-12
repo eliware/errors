@@ -92,7 +92,7 @@ test("rolls back partial registration and logger failure", () => {
   ).toThrow("log");
 });
 
-test("preserves registration errors when rollback removal fails", () => {
+test("preserves failed rollback state and avoids orphan handlers", () => {
   const processObj = {
     on: jest
       .fn()
@@ -106,21 +106,6 @@ test("preserves registration errors when rollback removal fails", () => {
   };
   expect(() => registerHandlers({ processObj, log: log() })).toThrow("add");
   expect(processObj.off).toHaveBeenCalledTimes(2);
-});
-
-test("retains failed rollback registrations to prevent orphan duplicates", () => {
-  const processObj = {
-    on: jest
-      .fn()
-      .mockImplementationOnce(() => {})
-      .mockImplementationOnce(() => {
-        throw Error("add");
-      }),
-    off: jest.fn(() => {
-      throw Error("remove");
-    }),
-  };
-  expect(() => registerHandlers({ processObj, log: log() })).toThrow("add");
   const retry = registerHandlers({ processObj, log: log(), events: ["warning"] });
   expect(retry.removeHandlers).toEqual(expect.any(Function));
   expect(processObj.on).toHaveBeenCalledTimes(2);

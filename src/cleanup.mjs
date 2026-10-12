@@ -1,3 +1,6 @@
+import { createHandlerRemoval } from "./handler-removal.mjs";
+import { finalizeCleanup } from "./finalize.mjs";
+
 export function createCleanup({
   processObj,
   remove,
@@ -8,49 +11,23 @@ export function createCleanup({
   registration,
   detachedEvents,
 }) {
-  let abortListener;
-  const removedEvents = new Set();
+  const removeHandlersFromProcess = createHandlerRemoval({
+    processObj,
+    remove,
+    selected,
+    handlers,
+    detachedEvents,
+  });
   const removeHandlers = () => {
     if (registration.removed) return;
     registration.removed = true;
-    let removalError;
-    for (const event of selected) {
-      if (removedEvents.has(event)) continue;
-      if (detachedEvents.has(event)) {
-        removedEvents.add(event);
-        continue;
-      }
-      try {
-        processObj[remove](event, handlers[event]);
-        removedEvents.add(event);
-      } catch (error) {
-        removalError ??= error;
-      }
-    }
-    if (removalError) {
+    try {
+      removeHandlersFromProcess();
+      finalizeCleanup({ signal, abortListener: removeHandlers, registrations, processObj });
+    } catch (error) {
       registration.removed = false;
-      throw removalError;
+      throw error;
     }
-    let abortError;
-    if (abortListener && typeof signal?.removeEventListener === "function") {
-      try {
-        signal.removeEventListener("abort", abortListener);
-      } catch (error) {
-        abortError = error;
-      }
-    }
-    if (abortError) {
-      registration.removed = false;
-      registrations.set(processObj, registration);
-      throw abortError;
-    }
-    registrations.delete(processObj);
   };
-  abortListener = removeHandlers;
-  return {
-    removeHandlers,
-    setAbortListener: (listener) => {
-      abortListener = listener;
-    },
-  };
+  return { removeHandlers };
 }

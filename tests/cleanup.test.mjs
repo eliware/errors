@@ -1,8 +1,8 @@
 import { jest } from "@jest/globals";
-import registerHandlers from "../src/registration.mjs";
 import { createCleanup } from "../src/cleanup.mjs";
+import registerHandlers from "../src/registration.mjs";
 
-test("removes direct cleanup handlers and clears the registration", () => {
+test("removes handlers, detaches the abort listener, and clears the registry", () => {
   const handler = jest.fn();
   const processObj = { off: jest.fn() };
   const registration = { removed: false };
@@ -18,6 +18,7 @@ test("removes direct cleanup handlers and clears the registration", () => {
     registration,
     detachedEvents: new Set(),
   });
+  registration.removeHandlers = cleanup.removeHandlers;
   cleanup.removeHandlers();
   expect(processObj.off).toHaveBeenCalledWith("warning", handler);
   expect(signal.removeEventListener).toHaveBeenCalledWith("abort", cleanup.removeHandlers);

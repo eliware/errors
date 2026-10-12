@@ -15,7 +15,7 @@ function makeOptions(overrides = {}) {
     registrations: new WeakMap([[processObj, registration]]),
     fired: new Set(),
     oneShot: false,
-    cleanupPending: false,
+    isCleanupPending: () => false,
     markSetupComplete: jest.fn(),
     ...overrides,
   };
@@ -30,8 +30,19 @@ test("adds handlers and marks setup complete", () => {
   expect(options.registration.ready).toBe(true);
 });
 
-test("removes handlers after pending one-shot setup", () => {
-  const options = makeOptions({ cleanupPending: true });
+test("reads pending cleanup state after synchronous setup", () => {
+  let cleanupPending = false;
+  const processObj = {
+    on: jest.fn(() => {
+      cleanupPending = true;
+    }),
+    off: jest.fn(),
+  };
+  const options = makeOptions({
+    processObj,
+    registrations: new WeakMap(),
+    isCleanupPending: () => cleanupPending,
+  });
   installHandlers(options);
   expect(options.registration.removeHandlers).toHaveBeenCalledTimes(1);
 });

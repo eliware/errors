@@ -86,22 +86,6 @@ test("propagates warning and rejection logger failures", () => {
   expect(() => handlers.unhandledRejection("reason")).toThrow("rejection log");
 });
 
-test("handles synchronous one-shot callbacks during registration", () => {
-  const processObj = {
-    on: jest.fn(),
-    once: jest.fn((event, handler) => handler()),
-    off: jest.fn(),
-  };
-  const registration = registerHandlers({
-    processObj,
-    log: log(),
-    once: true,
-    events: ["warning"],
-  });
-  expect(registration.removed).toBe(true);
-  expect(processObj.off).toHaveBeenCalledWith("warning", expect.any(Function));
-});
-
 test("does not attach a signal listener after synchronous one-shot cleanup", () => {
   const processObj = {
     on: jest.fn(),
@@ -131,6 +115,8 @@ test("cleans up all listeners after synchronous multi-event once setup", () => {
   });
   expect(registration.removed).toBe(true);
   expect(processObj.off).toHaveBeenCalledTimes(2);
+  expect(processObj.off).toHaveBeenCalledWith("warning", expect.any(Function));
+  expect(processObj.off).toHaveBeenCalledWith("uncaughtException", expect.any(Function));
 });
 
 test("logs successful registration after synchronous one-shot cleanup", () => {

@@ -1,5 +1,11 @@
 import { attachFailure } from "./failure.mjs";
 
+export function finalizeCleanup({ signal, abortListener, registrations, processObj }) {
+  if (abortListener && typeof signal?.removeEventListener === "function")
+    signal.removeEventListener("abort", abortListener);
+  registrations.delete(processObj);
+}
+
 export function finalizeRegistration({ signal, log, registration, registrations, processObj }) {
   try {
     if (signal && !registration.removed) {

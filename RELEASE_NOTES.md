@@ -2,17 +2,29 @@
 
 ## 12.0.0 — 2026-10-12
 
+### Added
+
+- Added user guides, troubleshooting steps, examples, and standard error indexes.
+- Added continuous integration and publish workflows.
+- Added focused source modules and matching tests for handler setup, cleanup, and lifecycle.
+
 ### Changed
 
-Updated package dependencies and aligned package metadata with shared conventions.
+- Updated package metadata, dependencies, and repository conventions.
+- Moved the package entry point and TypeScript declarations into `src/`.
+- Kept one active registration for each process object. Later calls do not change its options.
+- Made setup reject listeners when the process object returns `false`.
+- Preserved cleanup state after a failure and allowed cleanup to retry.
+- Kept the test harness and full coverage checks.
 
 ### Breaking changes
 
-Moved the public runtime entrypoint and TypeScript declarations under `src/`.
+- Direct imports from the old root entry point no longer work. Import from `@eliware/errors`.
 
 ### Migration
 
-Install version 12.0.0 and import from `@eliware/errors` as before.
+- Update direct imports to use `@eliware/errors`.
+- Pass an `AbortSignal` on the first registration call when abort cleanup is required.
 
 ## 2.1.0 — 2026-09-02
 

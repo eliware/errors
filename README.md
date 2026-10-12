@@ -23,19 +23,18 @@ Process-level handlers for uncaught exceptions, unhandled rejections, and warnin
 
 ## Features
 
-- Register handlers for uncaught exceptions, unhandled rejections, and warnings.
-- Select events and inject a logger or process-like object.
-- Remove handlers with a registration method or an `AbortSignal`.
-- Use one-shot listeners when the process-like object supports them.
-- Use the package with native ECMAScript modules and TypeScript declarations.
+- Handle uncaught exceptions, unhandled rejections, and process warnings.
+- Select events and provide a logger or process object.
+- Remove handlers with the returned registration or an `AbortSignal`.
+- Use one-shot listeners and TypeScript declarations.
 
 ## Requirements
 
-Use Node.js 26 or newer. Use an ECMAScript module project.
+Use Node.js 26 or newer. Use a project that supports ECMAScript modules.
 
 ## Setup
 
-Install the package from npm:
+Install the public npm package:
 
 ```bash
 npm install @eliware/errors
@@ -43,75 +42,59 @@ npm install @eliware/errors
 
 ## Usage
 
-Import and register the handlers:
+Import `registerHandlers` and select the events that you need:
 
 ```js
 import { registerHandlers } from "@eliware/errors";
 
-const registration = registerHandlers();
-registration.removeHandlers();
+const handlers = registerHandlers({ events: ["warning"] });
+handlers.removeHandlers();
 ```
 
-Keep the registration for the application lifetime. Remove its handlers during shutdown.
-See [Release Notes](RELEASE_NOTES.md) for package changes.
+Keep the returned object while you need its handlers. Call `removeHandlers()` during shutdown.
+Read the [usage guide](docs/usage.md) for options and behavior.
+Read the [release notes](RELEASE_NOTES.md) for package changes.
 
 ## Development
 
-Use Node.js 26 or newer. Use `npm ci` to install development dependencies.
-Run `npm test` to validate the repository.
-
+Use Node.js 26 or newer. Run `npm ci` to install development dependencies.
 Read the [documentation index](docs/README.md), [examples index](examples/README.md),
-and [specifications index](specs/README.md) for more information.
+and [specifications index](specs/README.md).
 
 ## Testing
 
-Use `npm test` for aggregate validation. Use `npm run lint` for lint checks.
-Use `npm run typecheck` for TypeScript checks. Use `npm run pack` for package checks.
+Run `npm test` from the repository root. It runs tests and aggregate repository checks.
 
 ## Troubleshooting
 
-The package registers handlers. It does not stop or restart the process.
-After an uncaught exception, log the error and shut down when appropriate.
-Logger and listener errors can reach the caller.
+The package logs events. It does not stop or restart the application.
+Read the [troubleshooting guide](docs/troubleshooting.md) for setup and cleanup errors.
 
 ## Security
 
-The default logger receives limited error metadata. Custom loggers control additional metadata and redaction.
-Do not send secrets or raw event values through custom logger settings.
+The default logger receives limited event metadata. The default logger does not receive raw event values.
+Review custom loggers for sensitive data. Do not log secrets or private data.
 
 ## API
 
-### `registerHandlers(options)`
-
-Register process event handlers. The function returns an object with `removeHandlers()` and `removed`.
-The `removed` value is `true` after successful cleanup.
-
-The optional `processObj` value must provide `on()` and either `off()` or `removeListener()`.
-The optional `log` value must provide `error()`, `warn()`, and `debug()` methods.
-
-Use `events` to select supported event names. Use `once` to request one-shot listeners.
-Use `signal` to remove handlers when an `AbortSignal` aborts.
-
-Registration is idempotent for each process-like object. Later options do not change an existing registration.
-Remove the registration before you register again with different options.
-
-Cleanup removes each handler once. A failed removal can be retried by calling `removeHandlers()` again.
-If setup fails, the package removes handlers that it added when possible.
-
-The package preserves existing listeners. It propagates logger and listener errors to the caller.
-Handling an uncaught exception can leave the process in an unsafe state.
+Call `registerHandlers(options)` to register event handlers. It returns `removeHandlers()` and `removed`.
+The default events are `uncaughtException`, `unhandledRejection`, and `warning`.
+Set `events`, `log`, `processObj`, `once`, or `signal` to change supported options.
+The package preserves other process listeners. It propagates logger and listener errors.
+Read the [usage guide](docs/usage.md) for the full API and supported behavior.
 
 ## Packaging
 
-The npm package includes runtime files under `src/`, declarations, documentation, examples, specifications,
-the license, and release notes. The package supports Node.js 26 and newer.
-
-The package uses semantic versioning. A published version is available from npm after publication completes.
-Repository validation does not approve or perform a release.
+The public package is `@eliware/errors`. Its runtime entry point is `src/index.mjs`.
+Its TypeScript declarations are in `src/index.d.ts`. It supports Node.js 26 and newer.
+The package contains `package.json`, `src/`, `docs/`, `examples/`, `specs/`, `README.md`,
+`AGENTS.md`, `LICENSE`, and `RELEASE_NOTES.md`.
+Use the npm page to check published versions. Versions follow Semantic Versioning.
+Validation does not publish the package. Publication requires explicit release authorization.
 
 ## Examples
 
-Read the [basic example](examples/basic.mjs) and the [example index](examples/README.md).
+Read the [examples index](examples/README.md) for prerequisites, commands, and expected results.
 
 ## Support
 

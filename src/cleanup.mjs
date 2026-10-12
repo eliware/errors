@@ -1,4 +1,13 @@
-export function createCleanup({ processObj, remove, selected, handlers, signal, registrations, registration, detachedEvents }) {
+export function createCleanup({
+  processObj,
+  remove,
+  selected,
+  handlers,
+  signal,
+  registrations,
+  registration,
+  detachedEvents,
+}) {
   let abortListener;
   const removedEvents = new Set();
   const removeHandlers = () => {
@@ -18,11 +27,14 @@ export function createCleanup({ processObj, remove, selected, handlers, signal, 
         removalError ??= error;
       }
     }
-    if (removalError) { registration.removed = false; throw removalError; }
+    if (removalError) {
+      registration.removed = false;
+      throw removalError;
+    }
     let abortError;
-    if (abortListener && typeof signal?.removeEventListener === 'function') {
+    if (abortListener && typeof signal?.removeEventListener === "function") {
       try {
-        signal.removeEventListener('abort', abortListener);
+        signal.removeEventListener("abort", abortListener);
       } catch (error) {
         abortError = error;
       }
@@ -35,5 +47,10 @@ export function createCleanup({ processObj, remove, selected, handlers, signal, 
     registrations.delete(processObj);
   };
   abortListener = removeHandlers;
-  return { removeHandlers, setAbortListener: listener => { abortListener = listener; } };
+  return {
+    removeHandlers,
+    setAbortListener: (listener) => {
+      abortListener = listener;
+    },
+  };
 }

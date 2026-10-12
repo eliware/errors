@@ -1,4 +1,4 @@
-import { registerHandlers } from './registration.mjs';
+import { registerHandlers } from "./registration.mjs";
 
 const publicRegisterHandlers = registerHandlers;
 

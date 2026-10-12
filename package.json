@@ -1,92 +1,124 @@
 {
-    "name": "@eliware/errors",
-    "type": "module",
-    "version": "2.1.0",
-    "description": "Process-level handlers for uncaught exceptions, unhandled rejections, and warnings.",
-    "types": "index.d.ts",
-    "files": [
-        "index.mjs",
-        "src",
-        "index.d.ts",
-        "README.md",
-        "LICENSE",
-        "RELEASE_NOTES.md",
-        "examples"
+  "name": "@eliware/errors",
+  "version": "12.0.0",
+  "type": "module",
+  "description": "Process-level handlers for uncaught exceptions, unhandled rejections, and warnings.",
+  "keywords": [
+    "nodejs",
+    "error handling",
+    "process",
+    "uncaughtException",
+    "unhandledRejection",
+    "warning",
+    "process exit",
+    "exception handler",
+    "logger",
+    "logging",
+    "node error handler",
+    "node process events",
+    "graceful shutdown",
+    "testable error handler",
+    "@eliware/errors",
+    "@eliware/log",
+    "esm",
+    "process-handler",
+    "error-handling"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "main": "./src/index.mjs",
+  "files": [
+    "src/",
+    "docs/",
+    "README.md",
+    "AGENTS.md",
+    "LICENSE",
+    "RELEASE_NOTES.md",
+    "examples/",
+    "specs/"
+  ],
+  "scripts": {
+    "test": "eliware-test",
+    "lint": "eliware-test --lint",
+    "audit": "eliware-test --audit",
+    "format": "eliware-test --format",
+    "format:check": "eliware-test --format-check",
+    "typecheck": "tsc --project tsconfig.json",
+    "pack": "eliware-test --pack"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "dependencies": {
+    "@eliware/log": "^12.0.0"
+  },
+  "devDependencies": {
+    "@eliware/test": "^12.0.0",
+    "typescript": "^7.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.mjs"
     ],
-    "publishConfig": {
-        "access": "public"
-    },
-    "exports": {
-        ".": {
-            "import": "./index.mjs",
-            "types": "./index.d.ts"
-        }
-    },
-    "scripts": {
-        "test": "eliware-test",
-        "lint": "eliware-test --lint",
-        "typecheck": "tsc --project tsconfig.json",
-        "pack": "npm pack --dry-run"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/eliware/errors.git"
-    },
-    "keywords": [
-        "nodejs",
-        "error handling",
-        "process",
-        "uncaughtException",
-        "unhandledRejection",
-        "warning",
-        "process exit",
-        "exception handler",
-        "logger",
-        "logging",
-        "node error handler",
-        "node process events",
-        "graceful shutdown",
-        "testable error handler",
-        "@eliware/errors",
-        "@eliware/log",
-        "esm",
-        "process-handler",
-        "error-handling"
+    "collectCoverageFrom": [
+      "src/**/*.mjs"
     ],
-    "author": "Eli Sterling, eliware.org <russell@eliware.org>",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/eliware/errors/issues"
-    },
-    "homepage": "https://github.com/eliware/errors#readme",
-    "devDependencies": {
-        "@eliware/test": "^5.0.0",
-        "typescript": "^7.0.2"
-    },
-    "dependencies": {
-        "@eliware/log": "^2.4.0"
-    },
-    "engines": {
-        "node": ">=26"
-    },
-    "sideEffects": false,
-    "prettier": {
-      "printWidth": 100,
-      "tabWidth": 2,
-      "useTabs": false,
-      "semi": true,
-      "singleQuote": false,
-      "quoteProps": "as-needed",
-      "jsxSingleQuote": false,
-      "trailingComma": "all",
-      "bracketSpacing": true,
-      "bracketSameLine": false,
-      "arrowParens": "always",
-      "proseWrap": "preserve",
-      "endOfLine": "lf"
-    },
-    "eliware": {
-      "id": "E-104",
-      "apply": ["general", "library", "npm-published"]
+    "coverageReporters": [
+      "text",
+      "json-summary"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
     }
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": false,
+    "quoteProps": "as-needed",
+    "jsxSingleQuote": false,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "arrowParens": "always",
+    "proseWrap": "preserve",
+    "endOfLine": "lf"
+  },
+  "author": "Eliware <eliware@eliware.org>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliware/errors.git"
+  },
+  "homepage": "https://github.com/eliware/errors#readme",
+  "bugs": {
+    "url": "https://github.com/eliware/errors/issues"
+  },
+  "eliware": {
+    "id": "E-104",
+    "apply": [
+      "general",
+      "library",
+      "npm-published"
+    ]
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.mjs"
+    }
+  },
+  "types": "./src/index.d.ts",
+  "sideEffects": false
 }

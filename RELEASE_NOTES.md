@@ -1,67 +1,91 @@
 # Release Notes
 
+## 12.0.0 — 2026-10-12
+
+### Changed
+
+Updated package dependencies and aligned package metadata with shared conventions.
+
+### Breaking changes
+
+Moved the public runtime entrypoint and TypeScript declarations under `src/`.
+
+### Migration
+
+Install version 12.0.0 and import from `@eliware/errors` as before.
+
 ## 2.1.0 — 2026-09-02
 
-- Decomposed handler registration into focused constants, validation, logging,
-  registration, and cleanup modules while preserving the root public entrypoint.
-- Hardened rollback and cleanup behavior for listener, logger, signal, and
-  one-shot handler failures.
-- Added focused module-level tests while retaining public API coverage.
-- Updated `@eliware/log` to 2.4.0 and `@eliware/test` to 2.4.0.
+### Changed
+
+Split handler registration into focused modules and improved cleanup recovery.
+
+### Added
+
+Added focused tests for cleanup, validation, logging, and registration.
 
 ## 2.0.0 — 2026-08-25
 
-- Modernized validation around the shared `@eliware/test` harness.
-- Updated the runtime dependency to `@eliware/log` 2.0.0.
-- Added cross-platform CI validation for Node.js 26 on Ubuntu and Windows,
-  including production dependency auditing and package checks.
-- Added explicit public publish configuration and included release notes in the
-  package contents.
-- Breaking: direct Jest/Oxlint scripts and the standalone coverage-gap command
-  were replaced by the shared test and lint harness.
+### Changed
+
+Updated the test harness and runtime logger dependency.
+
+### Added
+
+Added cross-platform validation and package checks.
+
+### Breaking changes
+
+Replaced direct Jest and Oxlint scripts with the shared test harness.
+
+### Migration
+
+Run `npm test` and `npm run lint` for repository validation.
 
 ## 1.1.9 — 2026-08-10
 
-- Improved process-like object validation and cleanup compatibility.
-- Reject unsupported event selections and roll back registrations when logging fails.
-- Added coverage for cleanup, validation, and rollback behavior.
+### Fixed
 
-## 1.1.7 — August 7, 2026
+Improved process-like object validation and cleanup compatibility.
 
-- Published a follow-up release after the 1.1.6 npm publication completed before CI retry.
+## 1.1.7 — 2026-08-07
+
+### Fixed
+
+Published a follow-up release after the 1.1.6 npm publication completed before CI retry.
 
 ## 1.1.6 — 2026-08-07
 
-- Updated the runtime dependency `@eliware/log` to 1.1.10.
-- Fixed coverage-gap filtering in the release validation workflow.
+### Fixed
+
+Updated dependency and coverage validation behavior.
 
 ## 1.1.5 — 2026-08-06
 
-- Added `AGENTS.md` with development conventions, validation commands, API compatibility guidance, security notes, and release workflow rules.
+### Added
+
+Added repository development instructions and security notes.
 
 ## 1.1.4 — 2026-08-06
 
-- Modernized the package as an ESM-first process error-handler library.
-- Added idempotent registration per process-like object and repeat-safe cleanup via `removeHandlers()`.
-- Added selectable process events, one-shot listeners, and `AbortSignal`-based cleanup.
-- Preserved existing process listeners while supporting custom process-like objects and loggers.
-- Improved structured logging for uncaught exceptions, unhandled rejections, and warnings.
-- Updated TypeScript declarations, README documentation, and usage example.
-- Removed obsolete CommonJS entrypoints and tests.
-- Standardized Node.js 26 CI, linting, coverage commands, and AgentX ignore rules.
-- Updated dependencies and lockfile, including `@eliware/log` 1.1.9.
+### Added
+
+Added the ESM process error-handler API, cleanup, selected events, and logger support.
 
 ## 1.1.3 — 2026-07-01
 
-- Refreshed package metadata and dependencies.
-- Regenerated the lockfile.
+### Changed
+
+Updated package metadata and dependencies.
 
 ## 1.1.2 — 2025-12-21
 
-- Updated the CommonJS and ESM implementations in parallel.
-- Refined package metadata and dependencies.
-- Regenerated the lockfile.
+### Changed
+
+Updated CommonJS and ESM implementations and package metadata.
 
 ## 1.1.1 — 2025-12-08
 
-- Refreshed package metadata, dependencies, and lockfile.
+### Changed
+
+Updated package metadata and dependencies.

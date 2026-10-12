@@ -1,1 +1,5 @@
-console.log('Errors example: run the commands documented in README.md from the project root.');
+import { registerHandlers } from "@eliware/errors";
+
+const registration = registerHandlers({ events: ["warning"] });
+process.emitWarning("Example warning");
+registration.removeHandlers();

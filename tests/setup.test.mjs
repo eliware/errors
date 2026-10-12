@@ -30,6 +30,16 @@ test("adds handlers and marks setup complete", () => {
   expect(options.registration.ready).toBe(true);
 });
 
+test("rejects an event when the process object returns false", () => {
+  const options = makeOptions({
+    processObj: { on: jest.fn(() => false), off: jest.fn() },
+    registrations: new WeakMap(),
+  });
+  expect(() => installHandlers(options)).toThrow("processObj rejected listener for warning");
+  expect(options.processObj.off).not.toHaveBeenCalled();
+  expect(options.registrations.has(options.processObj)).toBe(false);
+});
+
 test("reads pending cleanup state after synchronous setup", () => {
   let cleanupPending = false;
   const processObj = {

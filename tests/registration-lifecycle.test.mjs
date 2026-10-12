@@ -49,9 +49,9 @@ test("is idempotent and supports once listeners", () => {
   });
   const later = registerHandlers({ processObj, log: log(), events: ["warning"], once: false });
   expect(later).toBe(first);
-  expect(() => registerHandlers({ processObj, log: log(), signal: {} })).toThrow(
-    "signal must provide addEventListener",
-  );
+  const signal = { addEventListener: jest.fn() };
+  expect(registerHandlers({ processObj, log: log(), signal })).toBe(first);
+  expect(signal.addEventListener).not.toHaveBeenCalled();
   expect(processObj.once).toHaveBeenCalledTimes(1);
   expect(processObj.on).not.toHaveBeenCalled();
   processObj.once.mock.calls[0][1]();

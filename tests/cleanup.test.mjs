@@ -97,6 +97,34 @@ test("reports abort-listener removal failures after handler cleanup", () => {
   expect(registration.removed).toBe(false);
 });
 
+test("retries abort-listener removal after handler cleanup succeeds", () => {
+  const signal = {
+    aborted: false,
+    addEventListener: jest.fn(),
+    removeEventListener: jest
+      .fn()
+      .mockImplementationOnce(() => {
+        throw Error("abort remove");
+      })
+      .mockImplementation(() => {}),
+  };
+  const processObj = { on: jest.fn(), off: jest.fn() };
+  const registration = registerHandlers({
+    processObj,
+    log: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+    signal,
+    events: ["warning"],
+  });
+  expect(() => registration.removeHandlers()).toThrow("abort remove");
+  expect(registration.removed).toBe(false);
+  expect(processObj.off).toHaveBeenCalledTimes(1);
+
+  registration.removeHandlers();
+  expect(registration.removed).toBe(true);
+  expect(processObj.off).toHaveBeenCalledTimes(1);
+  expect(signal.removeEventListener).toHaveBeenCalledTimes(2);
+});
+
 test("cleans up immediately when the signal is already aborted", () => {
   const controller = new AbortController();
   controller.abort();

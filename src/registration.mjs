@@ -17,16 +17,14 @@ export function registerHandlers({
   once = false,
   signal,
 } = {}) {
-  const selected = normalizeEvents(events);
-  const remove = validateProcessObject(processObj);
-  validateLogger(log);
   const existing = registrations.get(processObj);
   if (existing) {
-    if (signal && typeof signal.addEventListener !== "function")
-      throw new TypeError("signal must provide addEventListener");
     if (!existing.ready) throw new Error("registration is still being set up");
     return existing;
   }
+  const selected = normalizeEvents(events);
+  const remove = validateProcessObject(processObj);
+  validateLogger(log);
   const add = once && typeof processObj.once === "function" ? "once" : "on";
   const oneShot = once;
   const state = createRegistrationState();

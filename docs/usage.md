@@ -78,6 +78,7 @@ Your custom logger controls its own data and redaction rules.
 Set `processObj` to provide a process-like object. The object must provide `on()`.
 It must also provide `off()` or `removeListener()`.
 It can provide `once()` for one-shot listeners.
+If `on()` or `once()` returns `false`, registration fails.
 
 ```js
 const listeners = new Map();
@@ -146,6 +147,7 @@ The package removes its abort listener after successful cleanup.
 The package keeps one active registration for each `processObj` object.
 A later call with the same object returns that registration.
 Later options do not change its events, logger, or cleanup signal.
+Pass an `AbortSignal` in the first call when abort cleanup is required.
 Remove the active registration before you register again with new options.
 
 The package preserves other listeners on the process object.

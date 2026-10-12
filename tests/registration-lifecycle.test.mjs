@@ -105,7 +105,7 @@ test("preserves failed rollback state and avoids orphan handlers", () => {
     }),
   };
   expect(() => registerHandlers({ processObj, log: log() })).toThrow("add");
-  expect(processObj.off).toHaveBeenCalledTimes(2);
+  expect(processObj.off).toHaveBeenCalledTimes(1);
   const retry = registerHandlers({ processObj, log: log(), events: ["warning"] });
   expect(retry.removeHandlers).toEqual(expect.any(Function));
   expect(processObj.on).toHaveBeenCalledTimes(2);

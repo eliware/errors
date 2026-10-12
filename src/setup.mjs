@@ -17,9 +17,9 @@ export function installHandlers({
   const attachedEvents = new Set();
   try {
     for (const event of selected) {
-      attachedEvents.add(event);
       processObj[add](event, handlers[event]);
       addedEvents.add(event);
+      attachedEvents.add(event);
     }
     markSetupComplete();
     if (isCleanupPending() || (oneShot && fired.size === selected.length))

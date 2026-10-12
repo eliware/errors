@@ -53,18 +53,22 @@ test("removes handlers after all one-shot events fire", () => {
   expect(options.registration.removeHandlers).toHaveBeenCalledTimes(2);
 });
 
-test("rolls back listeners after setup fails", () => {
+test("preserves existing listeners when event setup fails", () => {
   const setupError = Error("setup");
+  const existing = jest.fn();
+  const listeners = new Set([existing]);
   const options = makeOptions({
     processObj: {
-      on: jest.fn(() => {
+      on: jest.fn((event, handler) => {
+        handler();
         throw setupError;
       }),
-      off: jest.fn(),
+      off: jest.fn(() => listeners.clear()),
     },
   });
   options.registrations = new WeakMap([[options.processObj, options.registration]]);
   expect(() => installHandlers(options)).toThrow(setupError);
-  expect(options.processObj.off).toHaveBeenCalledWith("warning", options.handlers.warning);
+  expect(options.processObj.off).not.toHaveBeenCalled();
+  expect(listeners.has(existing)).toBe(true);
   expect(options.registrations.has(options.processObj)).toBe(false);
 });

@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
-import registerHandlers from "../src/registration.mjs";
-import { createRegistrationLifecycle } from "../src/registration-lifecycle.mjs";
+import registerHandlers from "../../src/registration.mjs";
+import { createRegistrationLifecycle } from "../../src/registration/lifecycle.mjs";
 
 const log = () => ({ debug: jest.fn(), error: jest.fn(), warn: jest.fn() });
 
@@ -62,7 +62,7 @@ test("rejects reentrant registration while setup is incomplete", () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   processObj.on.mockImplementationOnce(() => registerHandlers({ processObj, log: log() }));
   expect(() => registerHandlers({ processObj, log: log(), events: ["warning"] })).toThrow(
-    "still being set up",
+    "registration setup is incomplete",
   );
 });
 

@@ -8,8 +8,10 @@ test("logs each supported event through its matching method", () => {
   eventLog(log, "unhandledRejection", "reason");
   eventLog(log, "uncaughtException", "failure");
   expect(log.warn).toHaveBeenCalledWith("Warning", { warning: { type: "string" } });
-  expect(log.error).toHaveBeenNthCalledWith(1, "Unhandled Rejection", { reasonType: "string" });
-  expect(log.error).toHaveBeenNthCalledWith(2, "Uncaught Exception", { error: { type: "string" } });
+  expect(log.error).toHaveBeenNthCalledWith(1, "Unhandled promise error", { reasonType: "string" });
+  expect(log.error).toHaveBeenNthCalledWith(2, "Uncaught process error", {
+    error: { type: "string" },
+  });
 });
 
 test("routes warning and rejection events to the logger", () => {
@@ -22,7 +24,7 @@ test("routes warning and rejection events to the logger", () => {
   handlers.warning("warning");
   handlers.unhandledRejection("reason", "promise");
   expect(log.warn).toHaveBeenCalledWith("Warning", { warning: { type: "string" } });
-  expect(log.error).toHaveBeenCalledWith("Unhandled Rejection", { reasonType: "string" });
+  expect(log.error).toHaveBeenCalledWith("Unhandled promise error", { reasonType: "string" });
 });
 
 test("logs uncaught exceptions", () => {
@@ -31,7 +33,7 @@ test("logs uncaught exceptions", () => {
   registerHandlers({ processObj, log, events: ["uncaughtException"] });
   const error = Error("boom");
   processObj.on.mock.calls[0][1](error);
-  expect(log.error).toHaveBeenCalledWith("Uncaught Exception", {
+  expect(log.error).toHaveBeenCalledWith("Uncaught process error", {
     error: { name: "Error", type: "Error" },
   });
 });
@@ -43,7 +45,7 @@ test("uses a stable fallback for unusual Error constructors", () => {
   const error = Object.create(Error.prototype);
   error.constructor = { name: 42 };
   processObj.on.mock.calls[0][1](error);
-  expect(log.error).toHaveBeenCalledWith("Uncaught Exception", {
+  expect(log.error).toHaveBeenCalledWith("Uncaught process error", {
     error: { name: "Error", type: "Error" },
   });
 });

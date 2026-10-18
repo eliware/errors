@@ -16,7 +16,7 @@ test("creates handlers for selected process events", () => {
   handlers.unhandledRejection("example");
   expect(Object.keys(handlers)).toEqual(["warning", "unhandledRejection"]);
   expect(log.warn).toHaveBeenCalledWith("Warning", { warning: { type: "string" } });
-  expect(log.error).toHaveBeenCalledWith("Unhandled Rejection", { reasonType: "string" });
+  expect(log.error).toHaveBeenCalledWith("Unhandled promise error", { reasonType: "string" });
 });
 
 test("returns an empty handler map for an empty selection", () => {

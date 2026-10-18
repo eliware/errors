@@ -3,7 +3,7 @@ import { defaultEvents } from "./constants.mjs";
 import { normalizeEvents, validateLogger, validateProcessObject } from "./validation.mjs";
 import { createCleanup } from "./cleanup.mjs";
 import { createEventHandlers } from "./event-handlers.mjs";
-import { createRegistrationLifecycle } from "./registration-lifecycle.mjs";
+import { createRegistrationLifecycle } from "./registration/lifecycle.mjs";
 import { createRegistrationState } from "./registration-state.mjs";
 import { installHandlers } from "./setup.mjs";
 import { finalizeRegistration } from "./finalize.mjs";
@@ -19,7 +19,7 @@ export function registerHandlers({
 } = {}) {
   const existing = registrations.get(processObj);
   if (existing) {
-    if (!existing.ready) throw new Error("registration is still being set up");
+    if (!existing.ready) throw new Error("registration setup is incomplete");
     return existing;
   }
   const selected = normalizeEvents(events);

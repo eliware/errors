@@ -23,7 +23,7 @@ Process-level handlers for uncaught exceptions, unhandled rejections, and warnin
 
 ## Features
 
-- Handle uncaught exceptions, unhandled rejections, and process warnings.
+- Catch uncaught exceptions, unhandled rejections, and process warnings.
 - Select events and provide a logger or process object.
 - Remove handlers with the returned registration or an `AbortSignal`.
 - Use one-shot listeners and TypeScript declarations.
@@ -42,7 +42,7 @@ npm install @eliware/errors
 
 ## Usage
 
-Import `registerHandlers` and select the events that you need:
+Import `registerHandlers` and select events:
 
 ```js
 import { registerHandlers } from "@eliware/errors";
@@ -51,7 +51,7 @@ const handlers = registerHandlers({ events: ["warning"] });
 handlers.removeHandlers();
 ```
 
-Keep the returned object while you need its handlers. Call `removeHandlers()` during shutdown.
+Keep the returned object while its handlers stay active. Call `removeHandlers()` during shutdown.
 Read the [usage guide](docs/usage.md) for options and behavior.
 Read the [release notes](RELEASE_NOTES.md) for package changes.
 
@@ -67,29 +67,31 @@ Run `npm test` from the repository root. It runs tests and aggregate repository 
 
 ## Troubleshooting
 
-The package logs events. It does not stop or restart the application.
+The package logs events. It does not stop the application. It does not start the application.
 Read the [troubleshooting guide](docs/troubleshooting.md) for setup and cleanup errors.
 
 ## Security
 
-The default logger receives limited event metadata. The default logger does not receive raw event values.
-Review custom loggers for sensitive data. Do not log secrets or private data.
+The default function receives a small set of event data. It does not receive raw event values.
+Examine custom output for sensitive data. Do not write secrets or private data to event output.
 
 ## API
 
-Call `registerHandlers(options)` to register event handlers. It returns `removeHandlers()` and `removed`.
+Call `registerHandlers(options)` to add event handlers. It returns `removeHandlers()` and `removed`.
 The default events are `uncaughtException`, `unhandledRejection`, and `warning`.
 Set `events`, `log`, `processObj`, `once`, or `signal` to change supported options.
+
 The package preserves other process listeners. It propagates logger and listener errors.
 Read the [usage guide](docs/usage.md) for the full API and supported behavior.
 
 ## Packaging
 
-The public package is `@eliware/errors`. Its runtime entry point is `src/index.mjs`.
-Its TypeScript declarations are in `src/index.d.ts`. It supports Node.js 26 and newer.
-The package contains `package.json`, `src/`, `docs/`, `examples/`, `specs/`, `README.md`,
-`AGENTS.md`, `LICENSE`, and `RELEASE_NOTES.md`.
-Use the npm page to check published versions. Versions follow Semantic Versioning.
+The public package name is `@eliware/errors`. The runtime entry point is `src/index.mjs`.
+The TypeScript declarations are in `src/index.d.ts`. The package supports Node.js 26 and newer.
+
+The package includes the files that `package.json` lists.
+Check the npm page for published versions. Use Semantic Versioning for release numbers.
+
 Validation does not publish the package. Publication requires explicit release authorization.
 
 ## Examples

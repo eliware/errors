@@ -127,7 +127,7 @@ test("logs successful registration after synchronous one-shot cleanup", () => {
   };
   const logger = log();
   registerHandlers({ processObj, log: logger, once: true, events: ["warning"] });
-  expect(logger.debug).toHaveBeenCalledWith("Exception handlers registered");
+  expect(logger.debug).toHaveBeenCalledWith("Handler setup is complete");
 });
 
 test("removes listeners added after a synchronous abort during setup", () => {

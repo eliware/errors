@@ -26,6 +26,6 @@ export function validateProcessObject(processObj) {
 export function validateLogger(log) {
   for (const method of ["error", "warn", "debug"]) {
     if (!log || typeof log[method] !== "function")
-      throw new TypeError(`log must provide a ${method} method`);
+      throw new TypeError(`logger must provide the ${method} method`);
   }
 }

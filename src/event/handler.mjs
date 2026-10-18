@@ -1,4 +1,4 @@
-import { eventLog } from "./logging.mjs";
+import { eventLog } from "../logging.mjs";
 
 export function createEventHandler({
   event,

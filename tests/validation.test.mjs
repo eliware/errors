@@ -41,12 +41,12 @@ test("validates event selections and process-like objects", () => {
 test("rejects malformed loggers during registration", () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   expect(() => registerHandlers({ processObj, log: {} })).toThrow(
-    "log must provide a error method",
+    "logger must provide the error method",
   );
   expect(() => registerHandlers({ processObj, log: { error: jest.fn() } })).toThrow(
-    "log must provide a warn method",
+    "logger must provide the warn method",
   );
   expect(() =>
     registerHandlers({ processObj, log: { error: jest.fn(), warn: jest.fn() } }),
-  ).toThrow("log must provide a debug method");
+  ).toThrow("logger must provide the debug method");
 });

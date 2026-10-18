@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { createEventHandler } from "../src/event-handler.mjs";
+import { createEventHandler } from "../../src/event/handler.mjs";
 
 function createOptions(overrides = {}) {
   return {

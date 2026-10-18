@@ -1,6 +1,6 @@
 # Troubleshooting
 
-Use this page to diagnose common setup and runtime errors.
+Use this page to find setup and run-time errors.
 
 ## The package rejects `events`
 
@@ -12,7 +12,7 @@ Remove all other names from the array.
 
 Provide an `on()` method. Also provide `off()` or `removeListener()`.
 If you set `once` to `true`, the package uses `once()` when it exists.
-The package can use `on()` when `once()` does not exist.
+If `once()` does not exist, the package uses `on()`.
 
 ## The package rejects `log`
 
@@ -24,7 +24,7 @@ The `debug()` method accepts a message.
 
 The package propagates errors from logger calls and event listeners.
 Add error control in your application when it needs a recovery step.
-Review the logger methods and the process object listeners for the first error.
+Examine the logger methods and process object listeners for the first error.
 
 ## A handler remains after cleanup
 
@@ -37,7 +37,7 @@ The package does not remove other listeners from the process object.
 
 Each process object can have one active registration.
 The package returns the active registration when you call it again with the same object.
-Call `removeHandlers()` before you register that object with new options.
+Call `removeHandlers()` before you add handlers to that object with new options.
 
 ## An AbortSignal does not remove a registration
 
@@ -45,19 +45,19 @@ Pass a valid `AbortSignal` in the `signal` option.
 Call `abort()` on its `AbortController` to remove the handlers.
 Check `removed` after the abort call.
 
-## The process continues after an uncaught exception
+## The process continues after an uncaught process error
 
-The package logs the exception. It does not stop or restart the application.
-Your application must control shutdown or recovery.
-An uncaught exception can leave the process in an unsafe state.
+The package logs the error. It does not stop the application or start it again.
+Your application must control shutdown and recovery.
+An uncaught process error can put the process in an unsafe state.
 
 ## Run repository checks
 
-Use these commands from the repository root:
+Run these commands from the repository root:
 
 ```bash
 npm ci
 npm test
 ```
 
-`npm test` runs the repository validation suite. It does not diagnose errors in your application.
+`npm test` runs the repository checks. It does not find errors in your application.

@@ -15,7 +15,7 @@ Run this command in your project:
 npm install @eliware/errors
 ```
 
-## Register the default handlers
+## Add the default handlers
 
 Import `registerHandlers` from the package. Call it during application startup.
 
@@ -26,7 +26,7 @@ const handlers = registerHandlers();
 ```
 
 By default, the package handles `uncaughtException`, `unhandledRejection`, and `warning`.
-Keep the returned object for the full time that you need these handlers.
+Keep the returned object while the handlers stay active.
 
 ## Select events
 
@@ -42,9 +42,9 @@ The package throws a `TypeError` if `events` is not an array.
 The package throws a `RangeError` if the array is empty or has no supported name.
 The package throws a `RangeError` if the array includes an unsupported name.
 
-## Choose a logger
+## Use a custom logger
 
-The default logger comes from `@eliware/log`. Set `log` to use another logger.
+The default logger comes from `@eliware/log`. Set `log` to use a custom logger.
 Your logger must provide `error(message, metadata)`, `warn(message, metadata)`, and `debug(message)` methods.
 
 ```js
@@ -63,13 +63,14 @@ const log = {
 const handlers = registerHandlers({ log, events: ["warning"] });
 ```
 
-The package sends a message and limited metadata to the logger.
+The package sends a message and a small set of metadata to the logger.
 For warnings, the message is `Warning` and the metadata key is `warning`.
-For uncaught exceptions, the message is `Uncaught Exception` and the key is `error`.
-For unhandled rejections, the message is `Unhandled Rejection` and the key is `reasonType`.
-For an `Error` value, warning and exception metadata contain `name: "Error"` and `type: "Error"`.
+For uncaught process errors, the message is `Uncaught process error` and the key is `error`.
+For unhandled promise events, the message is `Unhandled promise error` and the key is `reasonType`.
+
+When a value has type `Error`, warning and process error metadata include `name: "Error"` and `type: "Error"`.
 For other values, that metadata contains the value type.
-Rejection metadata contains the result of JavaScript `typeof` for the reason.
+The package sets `reasonType` to the value that JavaScript `typeof` returns for the cause.
 The default logger does not receive the raw event value.
 Your custom logger controls its own data and redaction rules.
 
@@ -95,14 +96,14 @@ const processObj = {
 const handlers = registerHandlers({ processObj, events: ["warning"] });
 ```
 
-The package uses the real Node.js `process` object when you omit `processObj`.
+The package uses Node.js `process` when you omit `processObj`.
 Use a custom process object for tests or controlled event sources.
 
 ## Use one-shot listeners
 
-Set `once` to `true` to handle each selected event one time.
+Set `once` to `true` to process each selected event one time.
 The package uses `processObj.once()` when that method exists.
-Otherwise, it uses `processObj.on()` and ignores later calls for that event.
+If `processObj.once()` does not exist, the package uses `processObj.on()` and ignores later calls for that event.
 The package removes the full registration after every selected event has fired once.
 
 ```js
@@ -111,9 +112,9 @@ const handlers = registerHandlers({ events: ["warning"], once: true });
 
 ## Remove handlers
 
-Call `removeHandlers()` when the application no longer needs the handlers.
+Call `removeHandlers()` when the application no longer uses the handlers.
 The call removes each registered handler once.
-Check `removed` to see whether cleanup completed.
+Check `removed` after the cleanup call.
 
 ```js
 const handlers = registerHandlers();
@@ -123,9 +124,9 @@ handlers.removeHandlers();
 console.log(handlers.removed); // true
 ```
 
-You can call `removeHandlers()` more than once. A second call does not repeat successful removals.
-If removal fails, the method throws the removal error.
-Call it again to retry any removal that failed.
+You can call `removeHandlers()` more than once. A second call does not repeat removals that finished.
+If one removal fails, the method throws that error.
+Call it again to retry the failed removal.
 
 ## Remove handlers with an AbortSignal
 
@@ -140,7 +141,7 @@ console.log(handlers.removed); // true
 ```
 
 You can also call `removeHandlers()` before the signal aborts.
-The package removes its abort listener after successful cleanup.
+The package removes its abort listener when cleanup is complete.
 
 ## Understand registration rules
 
@@ -148,17 +149,17 @@ The package keeps one active registration for each `processObj` object.
 A later call with the same object returns that registration.
 Later options do not change its events, logger, or cleanup signal.
 Pass an `AbortSignal` in the first call when abort cleanup is required.
-Remove the active registration before you register again with new options.
+Remove the active handlers before you call the function again with new options.
 
 The package preserves other listeners on the process object.
-It does not stop or restart the application.
-After an uncaught exception, your application must decide how to stop or recover.
-The process can be in an unsafe state after an uncaught exception.
+It does not stop the application or start it again.
+After an uncaught process error, your application must control shutdown or recovery.
+The process can be in an unsafe state after an uncaught process error.
 
-## Handle errors from callbacks
+## Errors from callbacks
 
-Logger errors and listener errors can reach the caller.
-Add error control around the event source when your application needs it.
+The caller receives logger errors and listener errors.
+Add error control around the event source when the application requires it.
 The package does not hide these errors.
 
 ## TypeScript

@@ -1,5 +1,5 @@
 import { attachFailure } from "./failure.mjs";
-import { createEventHandler } from "./event-handler.mjs";
+import { createEventHandler } from "./event/handler.mjs";
 
 export function createEventHandlers({ selected, log, oneShot, add, state }) {
   const handlers = {};

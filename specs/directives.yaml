@@ -3,10 +3,10 @@ description: Defines public requirements for process event handlers.
 directives:
   - id: E-104.0
     dos:
-      - Register handlers for uncaught exceptions, unhandled rejections, and warnings.
+      - Add handlers for uncaught process errors, unhandled promise rejections, and warnings.
       - Preserve existing listeners on the process-like object.
     donts:
-      - Do not terminate or restart the application.
+      - Do not stop the application. Do not start it again.
     children:
       - id: E-104.0.0
         dos:
@@ -18,8 +18,8 @@ directives:
           - Do not change options on an existing registration.
       - id: E-104.0.1
         dos:
-          - Send limited error metadata to the default logger.
+          - Send a small set of error data to the default logger.
           - Propagate logger and listener failures to the caller.
-          - Roll back handlers after a failed setup when possible.
+          - Remove attached handlers after a failed setup when possible.
         donts:
           - Do not expose raw event values through the default logger.

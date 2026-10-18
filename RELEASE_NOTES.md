@@ -1,5 +1,13 @@
 # Release Notes
 
+## 13.0.0 — 2026-10-17
+
+### Changed
+
+- Updated the package version to 13.0.0.
+- Updated the repository configuration for Convention 13.0.
+- Updated logger messages to name process errors and promise errors.
+
 ## 12.0.0 — 2026-10-12
 
 ### Added
@@ -19,7 +27,7 @@
 
 ### Breaking changes
 
-- Direct imports from the old root entry point no longer work. Import from `@eliware/errors`.
+- Direct imports from the previous root entry point do not work. Use `@eliware/errors`.
 
 ### Migration
 
@@ -53,51 +61,3 @@ Replaced direct Jest and Oxlint scripts with the shared test harness.
 ### Migration
 
 Run `npm test` and `npm run lint` for repository validation.
-
-## 1.1.9 — 2026-08-10
-
-### Fixed
-
-Improved process-like object validation and cleanup compatibility.
-
-## 1.1.7 — 2026-08-07
-
-### Fixed
-
-Published a follow-up release after the 1.1.6 npm publication completed before CI retry.
-
-## 1.1.6 — 2026-08-07
-
-### Fixed
-
-Updated dependency and coverage validation behavior.
-
-## 1.1.5 — 2026-08-06
-
-### Added
-
-Added repository development instructions and security notes.
-
-## 1.1.4 — 2026-08-06
-
-### Added
-
-Added the ESM process error-handler API, cleanup, selected events, and logger support.
-
-## 1.1.3 — 2026-07-01
-
-### Changed
-
-Updated package metadata and dependencies.
-
-## 1.1.2 — 2025-12-21
-
-### Changed
-
-Updated CommonJS and ESM implementations and package metadata.
-
-## 1.1.1 — 2025-12-08
-
-### Changed
-
-Updated package metadata and dependencies.

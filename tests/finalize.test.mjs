@@ -18,7 +18,7 @@ function makeOptions(overrides = {}) {
 test("logs successful registration", () => {
   const options = makeOptions();
   expect(finalizeRegistration(options)).toBe(options.registration);
-  expect(options.log.debug).toHaveBeenCalledWith("Exception handlers registered");
+  expect(options.log.debug).toHaveBeenCalledWith("Handler setup is complete");
 });
 
 test("attaches a signal and removes handlers when it is aborted", () => {

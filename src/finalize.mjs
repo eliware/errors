@@ -14,7 +14,7 @@ export function finalizeRegistration({ signal, log, registration, registrations,
       signal.addEventListener("abort", registration.removeHandlers, { once: true });
       if (signal.aborted) registration.removeHandlers();
     }
-    log.debug("Exception handlers registered");
+    log.debug("Handler setup is complete");
   } catch (error) {
     let cleanupFailed = false;
     try {

@@ -29,3 +29,8 @@ export function validateLogger(log) {
       throw new TypeError(`logger must provide the ${method} method`);
   }
 }
+
+export function validateSignal(signal) {
+  if (signal && typeof signal.addEventListener !== "function")
+    throw new TypeError("signal must provide addEventListener");
+}

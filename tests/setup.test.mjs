@@ -70,15 +70,32 @@ test("preserves existing listeners when event setup fails", () => {
   const options = makeOptions({
     processObj: {
       on: jest.fn((event, handler) => {
+        listeners.add(handler);
         handler();
         throw setupError;
       }),
-      off: jest.fn(() => listeners.clear()),
+      off: jest.fn((event, handler) => listeners.delete(handler)),
     },
   });
   options.registrations = new WeakMap([[options.processObj, options.registration]]);
   expect(() => installHandlers(options)).toThrow(setupError);
-  expect(options.processObj.off).not.toHaveBeenCalled();
+  expect(options.processObj.off).toHaveBeenCalledWith("warning", expect.any(Function));
   expect(listeners.has(existing)).toBe(true);
   expect(options.registrations.has(options.processObj)).toBe(false);
+});
+
+test("removes a listener when the process method attaches it and then throws", () => {
+  const listeners = new Set();
+  const setupError = Error("setup");
+  const processObj = {
+    on: jest.fn((event, handler) => {
+      listeners.add(handler);
+      throw setupError;
+    }),
+    off: jest.fn((event, handler) => listeners.delete(handler)),
+  };
+  const options = makeOptions({ processObj, registrations: new WeakMap() });
+  expect(() => installHandlers(options)).toThrow(setupError);
+  expect(processObj.off).toHaveBeenCalledWith("warning", options.handlers.warning);
+  expect(listeners.size).toBe(0);
 });

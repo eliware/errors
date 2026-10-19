@@ -45,3 +45,24 @@ test("retains a registration when listener rollback fails", () => {
   expect(registration.ready).toBe(true);
   expect(registrations.get(processObj)).toBe(registration);
 });
+
+test("retains a registration when rollback throws undefined", () => {
+  const processObj = {
+    off: jest.fn(() => {
+      throw undefined;
+    }),
+  };
+  const registration = { ready: false };
+  const registrations = new WeakMap([[processObj, registration]]);
+  rollbackRegistration({
+    error: Error("setup"),
+    attachedEvents: new Set(["warning"]),
+    processObj,
+    remove: "off",
+    handlers: { warning: jest.fn() },
+    registration,
+    registrations,
+  });
+  expect(registration.ready).toBe(true);
+  expect(registrations.get(processObj)).toBe(registration);
+});

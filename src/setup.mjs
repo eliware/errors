@@ -17,7 +17,13 @@ export function installHandlers({
   const attachedEvents = new Set();
   try {
     for (const event of selected) {
-      const added = processObj[add](event, handlers[event]);
+      let added;
+      try {
+        added = processObj[add](event, handlers[event]);
+      } catch (error) {
+        attachedEvents.add(event);
+        throw error;
+      }
       if (added === false) throw new Error(`processObj rejected listener for ${event}`);
       addedEvents.add(event);
       attachedEvents.add(event);

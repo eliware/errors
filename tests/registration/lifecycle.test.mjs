@@ -105,7 +105,7 @@ test("preserves failed rollback state and avoids orphan handlers", () => {
     }),
   };
   expect(() => registerHandlers({ processObj, log: log() })).toThrow("add");
-  expect(processObj.off).toHaveBeenCalledTimes(1);
+  expect(processObj.off).toHaveBeenCalledTimes(2);
   const retry = registerHandlers({ processObj, log: log(), events: ["warning"] });
   expect(retry.removeHandlers).toEqual(expect.any(Function));
   expect(processObj.on).toHaveBeenCalledTimes(2);
@@ -139,12 +139,13 @@ test("exposes a recovery handle when rollback fails", () => {
   expect(error.registration.removed).toBe(true);
 });
 
-test("rolls back when signal setup fails", () => {
+test("rejects invalid signal setup before attaching process handlers", () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   expect(() => registerHandlers({ processObj, log: log(), signal: {} })).toThrow(
     "signal must provide addEventListener",
   );
-  expect(processObj.off).toHaveBeenCalledWith("uncaughtException", expect.any(Function));
+  expect(processObj.on).not.toHaveBeenCalled();
+  expect(processObj.off).not.toHaveBeenCalled();
 });
 
 test("preserves logger failures when rollback also fails", () => {

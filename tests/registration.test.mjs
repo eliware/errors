@@ -24,6 +24,26 @@ test("uses process and logger defaults when options omit them", () => {
   registration.removeHandlers();
 });
 
+test("validates later options before returning an active registration", () => {
+  const processObj = { on: jest.fn(), off: jest.fn() };
+  const registration = registerHandlers({ processObj, log: log(), events: ["warning"] });
+  expect(() => registerHandlers({ processObj, log: log(), events: ["invalid"] })).toThrow(
+    RangeError,
+  );
+  expect(() => registerHandlers({ processObj, log: {}, events: ["warning"] })).toThrow(
+    "logger must provide the error method",
+  );
+  expect(() => registerHandlers({ processObj, log: log(), signal: {} })).toThrow(
+    "signal must provide addEventListener",
+  );
+  processObj.on = undefined;
+  expect(() => registerHandlers({ processObj, log: log() })).toThrow(
+    "processObj must provide an on method",
+  );
+  expect(registration.removed).toBe(false);
+  registration.removeHandlers();
+});
+
 test("falls back to removable on listeners when once is unavailable", () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   const registration = registerHandlers({

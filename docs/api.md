@@ -65,6 +65,7 @@ If `on()` or `once()` returns `false`, the package treats that event as rejected
 ## Registration behavior
 
 The package keeps one active registration for each process object.
+Each call validates its options before it checks for an active registration.
 A second call with that object returns the active registration.
 Later options do not change the active events, logger, or signal.
 Pass all required options in the first call.
@@ -100,6 +101,8 @@ The package removes its abort listener after cleanup succeeds.
 The package throws a `TypeError` when the process object, logger, or signal lacks a required method.
 During setup, the package throws errors from event methods or logger methods.
 The package tries to remove earlier handlers when setup fails.
+If an event method throws, the package also tries to remove that event's handler.
+
 If rollback fails, the thrown error can include `rollbackError` and `registration` properties.
 Call `error.registration.removeHandlers()` to retry handler removal.
 If setup cleanup also fails, the thrown error can include a `cleanupError` property.

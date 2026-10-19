@@ -10,14 +10,18 @@ export function rollbackRegistration({
   registrations,
 }) {
   let rollbackError;
+  let rollbackFailed = false;
   for (const event of attachedEvents) {
     try {
       processObj[remove](event, handlers[event]);
     } catch (removalError) {
-      rollbackError ??= removalError;
+      if (!rollbackFailed) {
+        rollbackError = removalError;
+        rollbackFailed = true;
+      }
     }
   }
-  if (rollbackError) {
+  if (rollbackFailed) {
     registration.ready = true;
     registrations.set(processObj, registration);
     attachFailure(error, "rollbackError", rollbackError);

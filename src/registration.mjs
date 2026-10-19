@@ -1,6 +1,11 @@
 import logger from "@eliware/log";
 import { defaultEvents } from "./constants.mjs";
-import { normalizeEvents, validateLogger, validateProcessObject } from "./validation.mjs";
+import {
+  normalizeEvents,
+  validateLogger,
+  validateProcessObject,
+  validateSignal,
+} from "./validation.mjs";
 import { createCleanup } from "./cleanup.mjs";
 import { createEventHandlers } from "./event-handlers.mjs";
 import { createRegistrationLifecycle } from "./registration/lifecycle.mjs";
@@ -17,14 +22,15 @@ export function registerHandlers({
   once = false,
   signal,
 } = {}) {
+  const selected = normalizeEvents(events);
+  const remove = validateProcessObject(processObj);
+  validateLogger(log);
+  validateSignal(signal);
   const existing = registrations.get(processObj);
   if (existing) {
     if (!existing.ready) throw new Error("registration setup is incomplete");
     return existing;
   }
-  const selected = normalizeEvents(events);
-  const remove = validateProcessObject(processObj);
-  validateLogger(log);
   const add = once && typeof processObj.once === "function" ? "once" : "on";
   const oneShot = once;
   const state = createRegistrationState();

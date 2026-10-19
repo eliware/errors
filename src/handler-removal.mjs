@@ -2,6 +2,7 @@ export function createHandlerRemoval({ processObj, remove, selected, handlers, d
   const removedEvents = new Set();
   return () => {
     let removalError;
+    let hasRemovalError = false;
     for (const event of selected) {
       if (removedEvents.has(event)) continue;
       if (detachedEvents.has(event)) {
@@ -12,9 +13,12 @@ export function createHandlerRemoval({ processObj, remove, selected, handlers, d
         processObj[remove](event, handlers[event]);
         removedEvents.add(event);
       } catch (error) {
-        removalError ??= error;
+        if (!hasRemovalError) {
+          removalError = error;
+          hasRemovalError = true;
+        }
       }
     }
-    if (removalError) throw removalError;
+    if (hasRemovalError) throw removalError;
   };
 }

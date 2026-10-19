@@ -78,6 +78,32 @@ test("removes abort listeners and attempts every removal", () => {
   expect(failing.off).toHaveBeenCalledTimes(4);
 });
 
+test("keeps cleanup retryable when a process removal throws undefined", () => {
+  const processObj = {
+    on: jest.fn(),
+    off: jest.fn().mockImplementationOnce(() => {
+      throw undefined;
+    }),
+  };
+  const registration = registerHandlers({
+    processObj,
+    log: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+    events: ["warning"],
+  });
+  let didThrow = false;
+  try {
+    registration.removeHandlers();
+  } catch (error) {
+    didThrow = true;
+    expect(error).toBeUndefined();
+  }
+  expect(didThrow).toBe(true);
+  expect(registration.removed).toBe(false);
+  registration.removeHandlers();
+  expect(registration.removed).toBe(true);
+  expect(processObj.off).toHaveBeenCalledTimes(2);
+});
+
 test("reports abort-listener removal failures after handler cleanup", () => {
   const signal = {
     aborted: false,

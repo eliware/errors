@@ -36,3 +36,50 @@ test("retries failed removals and skips successful removals", () => {
   removeHandlers();
   expect(processObj.off).toHaveBeenCalledTimes(3);
 });
+
+test("retries removals that throw undefined", () => {
+  const processObj = {
+    off: jest.fn().mockImplementationOnce(() => {
+      throw undefined;
+    }),
+  };
+  const removeHandlers = createHandlerRemoval({
+    processObj,
+    remove: "off",
+    selected: ["warning"],
+    handlers: { warning: jest.fn() },
+    detachedEvents: new Set(),
+  });
+  let didThrow = false;
+  try {
+    removeHandlers();
+  } catch (error) {
+    didThrow = true;
+    expect(error).toBeUndefined();
+  }
+  expect(didThrow).toBe(true);
+  removeHandlers();
+  expect(processObj.off).toHaveBeenCalledTimes(2);
+});
+
+test("throws the first error after it attempts every removal", () => {
+  const processObj = {
+    off: jest
+      .fn()
+      .mockImplementationOnce(() => {
+        throw Error("first");
+      })
+      .mockImplementationOnce(() => {
+        throw Error("second");
+      }),
+  };
+  const removeHandlers = createHandlerRemoval({
+    processObj,
+    remove: "off",
+    selected: ["warning", "uncaughtException"],
+    handlers: { warning: jest.fn(), uncaughtException: jest.fn() },
+    detachedEvents: new Set(),
+  });
+  expect(removeHandlers).toThrow("first");
+  expect(processObj.off).toHaveBeenCalledTimes(2);
+});

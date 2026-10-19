@@ -1,12 +1,33 @@
 # Release Notes
 
-## 13.0.0 — 2026-10-17
+## 13.0.0 — 2026-10-19
+
+### Added
+
+- Added an API reference for options, events, logger output, registration, cleanup, and errors.
+- Expanded usage and troubleshooting guides for setup, event selection, logger use, and recovery.
+- Added tests for cleanup retries and listeners that attach before setup fails.
 
 ### Changed
 
-- Updated the package version to 13.0.0.
-- Updated the repository configuration for Convention 13.0.
-- Updated logger messages to name process errors and promise errors.
+- Updated the package and Eliware dependencies to version 13.0.0.
+- Changed logger messages to `Uncaught process error` and `Unhandled promise error`.
+- Updated GitHub workflows to use checkout v7 and full history for validation.
+- Renamed the npm publication workflow to `npm.yaml` and updated its release checks.
+- Updated Knit deployment to pull the configured branch before package installation and tests.
+- Aligned repository specifications with Convention 13.0 and moved focused modules into subdirectories.
+- Updated documentation indexes and shortened the root README and contributor guidance.
+
+### Fixed
+
+- Validate each call before the package reuses an active registration.
+- Retry handler removal when a process method throws a falsy value, such as `undefined`.
+- Remove a listener if an event method adds it and then throws.
+- Keep a recovery registration if cleanup cannot remove every attempted listener.
+
+### Migration
+
+- Update logger checks from `Uncaught Exception` and `Unhandled Rejection` to the new messages.
 
 ## 12.0.0 — 2026-10-12
 

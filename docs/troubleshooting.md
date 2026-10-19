@@ -1,6 +1,7 @@
 # Troubleshooting
 
 Use this page to find setup and run-time errors.
+Read the [API reference](api.md) for full option and cleanup details.
 
 ## The package rejects `events`
 
@@ -20,6 +21,17 @@ Provide `error()`, `warn()`, and `debug()` methods.
 The `error()` and `warn()` methods accept a message and metadata.
 The `debug()` method accepts a message.
 
+## Registration fails during setup
+
+Give `processObj` the required `on()` method and one removal method.
+Give the logger the `error()`, `warn()`, and `debug()` methods.
+Set `events` to an array of supported event names.
+If an event method returns `false`, the package treats that event as rejected.
+If setup fails after earlier events attach, the package removes those earlier handlers.
+
+Read `rollbackError` and `registration` on the thrown error if cleanup also fails.
+Call `error.registration.removeHandlers()` to retry that cleanup.
+
 ## A logger or listener error reaches the caller
 
 The package propagates errors from logger calls and event listeners.
@@ -32,6 +44,7 @@ Check the `removed` property after `removeHandlers()` returns.
 The property is `true` only after cleanup succeeds.
 If `removeHandlers()` throws, call it again to retry failed removals.
 The package does not remove other listeners from the process object.
+If one removal fails, the package keeps the completed removals and retries only the remaining work.
 
 ## A second registration does not use new options
 
@@ -47,8 +60,14 @@ Check `removed` after the abort call.
 
 ## The process continues after an uncaught process error
 
-The package logs the error. It does not stop the application or start it again.
-Your application must control shutdown and recovery.
+The default event list includes `uncaughtException`.
+This listener changes Node.js default exit behavior for that event.
+The package does not stop the process.
+
+Do not continue usual work after an uncaught process error.
+Do synchronous cleanup, then stop the process.
+Use a separate process manager to start a replacement process.
+Read the [Node.js process guide](https://nodejs.org/api/process.html#event-uncaughtexception) for details.
 An uncaught process error can put the process in an unsafe state.
 
 ## Run repository checks

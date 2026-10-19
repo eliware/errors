@@ -1,6 +1,7 @@
 # Usage
 
 This guide explains package setup, event selection, logger use, and handler cleanup.
+Read the [API reference](api.md) for option defaults and error details.
 
 ## Requirements
 
@@ -66,13 +67,14 @@ const handlers = registerHandlers({ log, events: ["warning"] });
 The package sends a message and a small set of metadata to the logger.
 For warnings, the message is `Warning` and the metadata key is `warning`.
 For uncaught process errors, the message is `Uncaught process error` and the key is `error`.
-For unhandled promise events, the message is `Unhandled promise error` and the key is `reasonType`.
+For `unhandledRejection`, the message is `Unhandled promise error` and the key is `reasonType`.
 
 When a value has type `Error`, warning and process error metadata include `name: "Error"` and `type: "Error"`.
 For other values, that metadata contains the value type.
-The package sets `reasonType` to the value that JavaScript `typeof` returns for the cause.
+The package sets `reasonType` to JavaScript `typeof` for the promise cause.
 The default logger does not receive the raw event value.
-Your custom logger controls its own data and redaction rules.
+The package does not send raw event values to a custom logger.
+Your logger can change the output destination and format.
 
 ## Use a custom process object
 

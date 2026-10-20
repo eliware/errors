@@ -1,8 +1,13 @@
 import { jest } from "@jest/globals";
-import registerHandlers, { registerHandlers as namedRegisterHandlers } from "../src/index.mjs";
+import registerHandlers, {
+  defaultEvents,
+  registerHandlers as namedRegisterHandlers,
+} from "../src/index.mjs";
 
 test("exposes the same named and default public API", () => {
   expect(registerHandlers).toBe(namedRegisterHandlers);
+  expect(defaultEvents).toEqual(["uncaughtException", "unhandledRejection", "warning"]);
+  expect(Object.isFrozen(defaultEvents)).toBe(true);
   const processObj = { on: jest.fn(), off: jest.fn() };
   const registration = registerHandlers({
     processObj,

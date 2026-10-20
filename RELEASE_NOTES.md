@@ -17,6 +17,8 @@
 - Updated Knit deployment to pull the configured branch before package installation and tests.
 - Aligned repository specifications with Convention 13.0 and moved focused modules into subdirectories.
 - Updated documentation indexes and shortened the root README and contributor guidance.
+- Exported the typed `defaultEvents` array and documented the supported event names.
+- Updated `specs/directives.yaml` to Convention 13.0.
 
 ### Fixed
 

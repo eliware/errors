@@ -1,4 +1,5 @@
 export type ProcessEvent = "uncaughtException" | "unhandledRejection" | "warning";
+export declare const defaultEvents: readonly ProcessEvent[];
 export type ProcessListener = (...args: unknown[]) => void;
 export interface Logger {
   error(message: string, metadata: unknown): unknown;

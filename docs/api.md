@@ -5,15 +5,16 @@ The package uses native ECMAScript modules and requires Node.js 26 or newer.
 
 ## Import the function
 
-Import the named or default `registerHandlers` function.
+Import the named or default `registerHandlers` function and the `defaultEvents` array.
 
 ```js
-import registerHandlers from "@eliware/errors";
+import registerHandlers, { defaultEvents } from "@eliware/errors";
 ```
 
 The named and default exports refer to the same function.
 The TypeScript declarations define types for the options, logger, process object, and return value.
 The package does not export internal helper modules.
+The `defaultEvents` array lists the supported event names. The array is read-only.
 
 ## Call the function
 

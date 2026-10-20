@@ -64,7 +64,7 @@ The default logger receives selected error details. Check custom logger output f
 
 ## API
 
-Read the [usage guide](docs/usage.md) for the exported API, options, defaults, and behavior.
+The package exports `registerHandlers` and `defaultEvents`. Read the [API reference](docs/api.md) for options, defaults, and behavior.
 
 ## Packaging
 

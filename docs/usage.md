@@ -95,6 +95,9 @@ const processObj = {
   off(event, listener) {
     listeners.get(event)?.delete(listener);
   },
+  listeners(event) {
+    return [...(listeners.get(event) ?? [])];
+  },
 };
 const handlers = registerHandlers({ processObj, events: ["warning"] });
 ```

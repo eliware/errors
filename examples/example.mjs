@@ -10,6 +10,9 @@ const processObj = {
   off(event, listener) {
     listeners.get(event)?.delete(listener);
   },
+  listeners(event) {
+    return [...(listeners.get(event) ?? [])];
+  },
 };
 const log = {
   error(message, metadata) {

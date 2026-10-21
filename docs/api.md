@@ -62,7 +62,8 @@ Also provide an `off()` or `removeListener()` method.
 The package uses `off()` when both removal methods exist.
 
 The process object can provide `listeners(event)` to let the package verify handler removal.
-If it does not provide `listeners(event)`, make removal methods throw or return `false` when removal fails.
+If the process object omits `listeners(event)`, removal methods must throw or return `false` when removal fails.
+The package cannot verify a silent removal failure when the process object omits `listeners(event)`.
 
 The object can provide `once()` for one-shot listeners.
 If `once()` does not exist, the package uses `on()` and tracks fired events.

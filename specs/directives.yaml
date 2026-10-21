@@ -17,7 +17,7 @@ directives:
           - Keep failed handler cleanup retryable through the returned registration.
           - Mark a false result from handler removal as a cleanup failure.
           - Verify handler removal when the process object provides listeners.
-          - Require removal methods to report failures when listener checks are unavailable.
+          - Require removal methods to throw or return false when listener checks are unavailable.
         donts:
           - Do not change options on an existing registration.
       - id: E-104.0.1

@@ -68,9 +68,9 @@ The package exports `registerHandlers` and `defaultEvents`. Read the [API refere
 
 ## Packaging
 
-The package name is `@eliware/errors`. Its runtime entry point is `src/index.mjs`, and its TypeScript declarations are in `src/index.d.ts`. It supports Node.js 26 and newer.
+The runtime entry point is `src/index.mjs`, and its TypeScript declarations are in `src/index.d.ts`.
 
-The `files` field in `package.json` defines package contents. Use Semantic Versioning for release numbers. Check the npm page for published versions.
+The `files` field in `package.json` defines package contents. Use numeric `MAJOR.MINOR.PATCH` versions and a `v<version>` Git tag for each release.
 
 Validation does not publish the package. Follow Operations procedures for release authorization.
 

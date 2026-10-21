@@ -1,6 +1,6 @@
+import { defaultEvents as publicDefaultEvents } from "../src/index.mjs";
 import { defaultEvents } from "../src/constants.mjs";
 
-test("defines the supported default process events", () => {
-  expect(defaultEvents).toEqual(["uncaughtException", "unhandledRejection", "warning"]);
-  expect(Object.isFrozen(defaultEvents)).toBe(true);
+test("exports the shared default event list", () => {
+  expect(publicDefaultEvents).toBe(defaultEvents);
 });

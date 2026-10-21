@@ -44,6 +44,40 @@ test("validates later options before returning an active registration", () => {
   registration.removeHandlers();
 });
 
+test("rejects invalid registration events and process objects", () => {
+  const logInstance = log();
+  expect(() => registerHandlers({ processObj: {}, log: logInstance })).toThrow("on method");
+  expect(() => registerHandlers({ processObj: { on: jest.fn() }, log: logInstance })).toThrow(
+    "off or removeListener",
+  );
+  const processObj = { on: jest.fn(), off: jest.fn() };
+  expect(() => registerHandlers({ processObj, log: logInstance, events: [] })).toThrow(
+    "at least one",
+  );
+  expect(() => registerHandlers({ processObj, log: logInstance, events: "warning" })).toThrow(
+    "events must be an array",
+  );
+  expect(() => registerHandlers({ processObj, log: logInstance, events: ["invalid"] })).toThrow(
+    "at least one",
+  );
+  expect(() =>
+    registerHandlers({ processObj, log: logInstance, events: ["warning", "invalid"] }),
+  ).toThrow("Unsupported process event");
+});
+
+test("rejects malformed loggers during registration", () => {
+  const processObj = { on: jest.fn(), off: jest.fn() };
+  expect(() => registerHandlers({ processObj, log: {} })).toThrow(
+    "logger must provide the error method",
+  );
+  expect(() => registerHandlers({ processObj, log: { error: jest.fn() } })).toThrow(
+    "logger must provide the warn method",
+  );
+  expect(() =>
+    registerHandlers({ processObj, log: { error: jest.fn(), warn: jest.fn() } }),
+  ).toThrow("logger must provide the debug method");
+});
+
 test("falls back to removable on listeners when once is unavailable", () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   const registration = registerHandlers({

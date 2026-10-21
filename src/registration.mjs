@@ -1,11 +1,7 @@
 import logger from "@eliware/log";
 import { defaultEvents } from "./constants.mjs";
-import {
-  normalizeEvents,
-  validateLogger,
-  validateProcessObject,
-  validateSignal,
-} from "./validation.mjs";
+import { normalizeEvents } from "./validation/events.mjs";
+import { validateLogger, validateProcessObject, validateSignal } from "./validation/options.mjs";
 import { createCleanup } from "./cleanup.mjs";
 import { createEventHandlers } from "./event-handlers.mjs";
 import { createRegistrationLifecycle } from "./registration/lifecycle.mjs";

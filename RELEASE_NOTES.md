@@ -1,11 +1,15 @@
 # Release Notes
 
-## 14.0.0 — 2026-10-20
+## 14.0.0 — 2026-10-21
 
 ### Changed
 
 - Updated package metadata and the Eliware logger and test dependencies to version 14.0.0.
 - Aligned repository requirements with Convention 14.0.
+
+### Fixed
+
+- Keep one-shot registrations available when handler cleanup fails so callers can retry cleanup.
 
 ## 13.0.0 — 2026-10-19
 

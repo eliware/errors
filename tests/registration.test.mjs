@@ -116,11 +116,12 @@ test("removes listeners added after a synchronous abort during setup", () => {
   expect(processObj.off).toHaveBeenCalledWith("warning", expect.any(Function));
 });
 
-test("preserves automatic cleanup failure state after the final one-shot event", () => {
+test("keeps failed one-shot cleanup retryable through its registration", () => {
+  const cleanupError = Error("cleanup");
   const processObj = {
     on: jest.fn(),
-    off: jest.fn(() => {
-      throw Error("cleanup");
+    off: jest.fn().mockImplementationOnce(() => {
+      throw cleanupError;
     }),
   };
   const registration = registerHandlers({
@@ -129,6 +130,10 @@ test("preserves automatic cleanup failure state after the final one-shot event",
     once: true,
     events: ["warning"],
   });
-  expect(() => processObj.on.mock.calls[0][1]("warning")).toThrow("cleanup");
+  expect(() => processObj.on.mock.calls[0][1]("warning")).toThrow(cleanupError);
   expect(registration.removed).toBe(false);
+  expect(processObj.off).toHaveBeenCalledTimes(1);
+  registration.removeHandlers();
+  expect(registration.removed).toBe(true);
+  expect(processObj.off).toHaveBeenCalledTimes(2);
 });

@@ -56,6 +56,21 @@ test("records callback and cleanup failures", () => {
   expect(options.attachFailure).toHaveBeenCalledWith(callbackError, "cleanupError", cleanupError);
 });
 
+test("propagates cleanup failures after a successful callback", () => {
+  const cleanupError = new Error("cleanup");
+  const options = createOptions({
+    isSetupComplete: () => true,
+    registration: {
+      removeHandlers: jest.fn(() => {
+        throw cleanupError;
+      }),
+    },
+  });
+  expect(() => handleOneShotEvent(options)).toThrow(cleanupError);
+  expect(options.registration.removeHandlers).toHaveBeenCalledTimes(1);
+  expect(options.attachFailure).not.toHaveBeenCalled();
+});
+
 test("defers cleanup after a callback error during setup", () => {
   const options = createOptions({
     invoke: jest.fn(() => {

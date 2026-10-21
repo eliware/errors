@@ -74,7 +74,10 @@ Pass all required options in the first call.
 If a call occurs while setup is incomplete, the package throws an error.
 
 If `once` is `true`, the package removes the registration after all selected events fire once.
-If a logger method throws during a one-shot event, the package marks that event as fired and removes the registration.
+The package marks a one-shot event as fired before it tries to remove handlers.
+If handler removal fails, the registration stays active until cleanup succeeds.
+Call `removeHandlers()` on the returned registration to retry cleanup.
+If a logger method throws during a one-shot event, the package tries to remove the registration.
 Logger and listener errors propagate to the caller.
 
 ## Registration object

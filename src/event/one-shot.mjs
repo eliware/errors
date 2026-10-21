@@ -11,15 +11,9 @@ export function handleOneShotEvent({
   setCleanupPending,
   attachFailure,
 }) {
+  let result;
   try {
-    const result = invoke();
-    fired.add(event);
-    if (add === "once" && addedEvents.has(event)) detachedEvents.add(event);
-    if (fired.size === selected.length) {
-      if (isSetupComplete()) registration.removeHandlers();
-      else setCleanupPending();
-    }
-    return result;
+    result = invoke();
   } catch (error) {
     fired.add(event);
     if (isSetupComplete()) {
@@ -31,4 +25,11 @@ export function handleOneShotEvent({
     } else setCleanupPending();
     throw error;
   }
+  fired.add(event);
+  if (add === "once" && addedEvents.has(event)) detachedEvents.add(event);
+  if (fired.size === selected.length) {
+    if (isSetupComplete()) registration.removeHandlers();
+    else setCleanupPending();
+  }
+  return result;
 }

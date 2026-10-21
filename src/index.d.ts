@@ -9,6 +9,7 @@ export interface Logger {
 export type ProcessLike = {
   on(event: ProcessEvent, listener: ProcessListener): unknown;
   once?(event: ProcessEvent, listener: ProcessListener): unknown;
+  listeners?(event: ProcessEvent): ProcessListener[];
 } & (
   | {
       off(event: ProcessEvent, listener: ProcessListener): unknown;

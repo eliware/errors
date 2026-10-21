@@ -60,6 +60,10 @@ The logger `debug()` method receives `Handler setup is complete` after setup.
 Set `processObj` to an object with an `on()` method.
 Also provide an `off()` or `removeListener()` method.
 The package uses `off()` when both removal methods exist.
+
+The process object can provide `listeners(event)` to let the package verify handler removal.
+If it does not provide `listeners(event)`, make removal methods throw or return `false` when removal fails.
+
 The object can provide `once()` for one-shot listeners.
 If `once()` does not exist, the package uses `on()` and tracks fired events.
 If the selected add method returns `false`, the package treats that event as rejected.

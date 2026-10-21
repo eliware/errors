@@ -1,4 +1,5 @@
 import { attachFailure } from "./failure.mjs";
+import { removeProcessListener } from "./handler-removal.mjs";
 
 export function rollbackRegistration({
   error,
@@ -13,8 +14,7 @@ export function rollbackRegistration({
   let rollbackFailed = false;
   for (const event of attachedEvents) {
     try {
-      const result = processObj[remove](event, handlers[event]);
-      if (result === false) throw new Error(`processObj rejected removal for ${event}`);
+      removeProcessListener({ processObj, remove, event, handler: handlers[event] });
     } catch (removalError) {
       if (!rollbackFailed) {
         rollbackError = removalError;

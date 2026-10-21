@@ -105,13 +105,14 @@ test("retains a recovery registration when rollback returns false", () => {
   const listeners = new Set();
   const setupError = Error("setup");
   const processObj = {
+    listeners: jest.fn(() => [...listeners]),
     on: jest.fn((event, handler) => {
       listeners.add(handler);
       throw setupError;
     }),
     off: jest
       .fn()
-      .mockImplementationOnce(() => false)
+      .mockImplementationOnce(() => undefined)
       .mockImplementation((event, handler) => {
         listeners.delete(handler);
       }),
@@ -123,9 +124,17 @@ test("retains a recovery registration when rollback returns false", () => {
       events: ["warning"],
     }),
   ).toThrow(setupError);
-  expect(setupError.rollbackError.message).toBe("processObj rejected removal for warning");
+  expect(setupError.rollbackError.message).toBe("processObj did not remove listener for warning");
   expect(listeners.size).toBe(1);
   expect(setupError.registration.ready).toBe(true);
+  const recovery = registerHandlers({
+    processObj,
+    log: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+    events: ["warning"],
+  });
+  expect(recovery).toBe(setupError.registration);
+  expect(recovery.removed).toBe(false);
+  expect(recovery.removeHandlers).toEqual(expect.any(Function));
   setupError.registration.removeHandlers();
   expect(listeners.size).toBe(0);
   expect(setupError.registration.removed).toBe(true);

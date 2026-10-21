@@ -1,5 +1,5 @@
 import { attachFailure } from "../failure.mjs";
-import { removeProcessListener } from "../handler-removal.mjs";
+import { removeProcessListener } from "../cleanup/listener.mjs";
 
 export function rollbackRegistration({
   error,

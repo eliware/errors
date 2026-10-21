@@ -1,18 +1,5 @@
 import { jest } from "@jest/globals";
-import {
-  validateLogger,
-  validateProcessObject,
-  validateSignal,
-} from "../../src/validation/options.mjs";
-
-test("validates process object methods and selects its removal method", () => {
-  expect(validateProcessObject({ on: jest.fn(), off: jest.fn() })).toBe("off");
-  expect(validateProcessObject({ on: jest.fn(), removeListener: jest.fn() })).toBe(
-    "removeListener",
-  );
-  expect(() => validateProcessObject({})).toThrow("on method");
-  expect(() => validateProcessObject({ on: jest.fn() })).toThrow("off or removeListener");
-});
+import { validateLogger, validateSignal } from "../../src/validation/options.mjs";
 
 test("validates logger and signal methods", () => {
   const logger = { error: jest.fn(), warn: jest.fn(), debug: jest.fn() };

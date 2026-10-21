@@ -12,9 +12,10 @@ import registerHandlers, { defaultEvents } from "@eliware/errors";
 ```
 
 The named and default exports refer to the same function.
-The TypeScript declarations define types for the options, logger, process object, and return value.
+The TypeScript declarations export `ProcessEvent`, `ProcessListener`, `Logger`, `ProcessLike`, `RegisterHandlersOptions`, and `RegisteredHandlers`.
 The package does not export internal helper modules.
-The `defaultEvents` array lists the supported event names. The array is read-only.
+The `defaultEvents` array lists `uncaughtException`, `unhandledRejection`, and `warning` in that order.
+The array is frozen at run time and read-only in TypeScript.
 
 ## Call the function
 
@@ -36,10 +37,10 @@ The function returns one registration object for that process object.
 | `once`       | `false`                   | Set to `true` to process each selected event one time.            |
 | `signal`     | No signal                 | An `AbortSignal` that removes handlers when it aborts.            |
 
-The package removes duplicate event names.
 The package throws a `TypeError` if `events` is not an array.
 The package throws a `RangeError` if the array is empty or has no supported name.
 The package throws a `RangeError` if the array contains an unsupported name.
+The package removes duplicate event names before it registers handlers.
 
 ## Supported events
 
@@ -61,7 +62,7 @@ Also provide an `off()` or `removeListener()` method.
 The package uses `off()` when both removal methods exist.
 The object can provide `once()` for one-shot listeners.
 If `once()` does not exist, the package uses `on()` and tracks fired events.
-If `on()` or `once()` returns `false`, the package treats that event as rejected.
+If the selected add method returns `false`, the package treats that event as rejected.
 
 ## Registration behavior
 

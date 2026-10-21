@@ -27,7 +27,7 @@ Give `processObj` the required `on()` method and one removal method.
 Give the logger the `error()`, `warn()`, and `debug()` methods.
 Set `events` to an array of supported event names.
 If an event method returns `false`, the package treats that event as rejected.
-If setup fails after earlier events attach, the package removes those earlier handlers.
+If setup fails, the package removes attached handlers. It also tries to remove a handler from an event method that throws.
 
 Read `rollbackError` and `registration` on the thrown error if cleanup also fails.
 Call `error.registration.removeHandlers()` to retry that cleanup.

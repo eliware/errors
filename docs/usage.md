@@ -82,6 +82,7 @@ Set `processObj` to provide a process-like object. The object must provide `on()
 It must also provide `off()` or `removeListener()`.
 It can provide `once()` for one-shot listeners.
 If `on()` or `once()` returns `false`, registration fails.
+If an event method attaches a handler and then throws, the package also tries to remove that handler.
 
 ```js
 const listeners = new Map();
@@ -166,7 +167,8 @@ The package does not hide these errors.
 
 ## TypeScript
 
-The package exports TypeScript declarations for `registerHandlers`, options, loggers, and process objects.
+The package exports TypeScript declarations for `ProcessEvent`, `ProcessListener`, `Logger`, `ProcessLike`, `RegisterHandlersOptions`, and `RegisteredHandlers`.
+The `defaultEvents` declaration is a read-only array of supported event names.
 Import the function from `@eliware/errors` in an ECMAScript module project.
 
 ```ts

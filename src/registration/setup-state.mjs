@@ -1,11 +1,7 @@
-export function createRegistrationState() {
+export function createRegistrationSetupState() {
   let setupComplete = false;
   let cleanupPending = false;
   return {
-    registration: { removed: false, ready: false },
-    fired: new Set(),
-    detachedEvents: new Set(),
-    addedEvents: new Set(),
     markSetupComplete() {
       setupComplete = true;
     },
@@ -15,7 +11,7 @@ export function createRegistrationState() {
     setCleanupPending() {
       cleanupPending = true;
     },
-    get cleanupPending() {
+    isCleanupPending() {
       return cleanupPending;
     },
   };

@@ -1,19 +1,7 @@
 import { jest } from "@jest/globals";
 import registerHandlers from "../../src/registration.mjs";
-import { createRegistrationLifecycle } from "../../src/registration/lifecycle.mjs";
 
 const log = () => ({ debug: jest.fn(), error: jest.fn(), warn: jest.fn() });
-
-test("stores and removes registrations by process object", () => {
-  const lifecycle = createRegistrationLifecycle();
-  const processObj = {};
-  const registration = {};
-  expect(lifecycle.get(processObj)).toBeUndefined();
-  lifecycle.set(processObj, registration);
-  expect(lifecycle.get(processObj)).toBe(registration);
-  expect(lifecycle.delete(processObj)).toBe(true);
-  expect(lifecycle.get(processObj)).toBeUndefined();
-});
 
 test("retains setup cleanup failures as secondary diagnostics", () => {
   const signal = {

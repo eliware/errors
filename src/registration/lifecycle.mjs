@@ -1,5 +1,7 @@
+import { createRegistrationRegistry } from "./registry.mjs";
+
 export function createRegistrationLifecycle() {
-  const registrations = new WeakMap();
+  const registrations = createRegistrationRegistry();
   return {
     get(processObj) {
       return registrations.get(processObj);

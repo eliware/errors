@@ -1,6 +1,7 @@
 import { jest } from "@jest/globals";
 import { createEventHandlers } from "../src/event-handlers.mjs";
-import { createRegistrationState } from "../src/registration-state.mjs";
+import { createRegistrationState } from "../src/registration/state.mjs";
+import { createRegistrationSetupState } from "../src/registration/setup-state.mjs";
 
 test("creates handlers for selected process events", () => {
   const state = createRegistrationState();
@@ -11,6 +12,7 @@ test("creates handlers for selected process events", () => {
     oneShot: false,
     add: "on",
     state,
+    setupState: createRegistrationSetupState(),
   });
   expect(Object.keys(handlers)).toEqual(["warning", "unhandledRejection"]);
   expect(handlers.warning).toEqual(expect.any(Function));
@@ -25,6 +27,7 @@ test("returns an empty handler map for an empty selection", () => {
       oneShot: false,
       add: "on",
       state: createRegistrationState(),
+      setupState: createRegistrationSetupState(),
     }),
   ).toEqual({});
 });

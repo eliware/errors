@@ -1,7 +1,7 @@
 import { attachFailure } from "./failure.mjs";
 import { createEventHandler } from "./event/handler.mjs";
 
-export function createEventHandlers({ selected, log, oneShot, add, state }) {
+export function createEventHandlers({ selected, log, oneShot, add, state, setupState }) {
   const handlers = {};
   for (const event of selected) {
     handlers[event] = createEventHandler({
@@ -14,8 +14,8 @@ export function createEventHandlers({ selected, log, oneShot, add, state }) {
       add,
       selected,
       registration: state.registration,
-      isSetupComplete: state.isSetupComplete,
-      setCleanupPending: state.setCleanupPending,
+      isSetupComplete: setupState.isSetupComplete,
+      setCleanupPending: setupState.setCleanupPending,
       attachFailure,
     });
   }

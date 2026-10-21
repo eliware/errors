@@ -6,7 +6,8 @@ import { validateLogger, validateSignal } from "./validation/options.mjs";
 import { createCleanup } from "./cleanup.mjs";
 import { createEventHandlers } from "./event-handlers.mjs";
 import { createRegistrationLifecycle } from "./registration/lifecycle.mjs";
-import { createRegistrationState } from "./registration-state.mjs";
+import { createRegistrationState } from "./registration/state.mjs";
+import { createRegistrationSetupState } from "./registration/setup-state.mjs";
 import { installHandlers } from "./setup.mjs";
 import { finalizeRegistration } from "./finalize.mjs";
 
@@ -31,8 +32,9 @@ export function registerHandlers({
   const add = once && typeof processObj.once === "function" ? "once" : "on";
   const oneShot = once;
   const state = createRegistrationState();
+  const setupState = createRegistrationSetupState();
   const { registration, fired, detachedEvents, addedEvents } = state;
-  const handlers = createEventHandlers({ selected, log, oneShot, add, state });
+  const handlers = createEventHandlers({ selected, log, oneShot, add, state, setupState });
   registrations.set(processObj, registration);
   const cleanup = createCleanup({
     processObj,
@@ -56,8 +58,8 @@ export function registerHandlers({
     registrations,
     fired,
     oneShot,
-    isCleanupPending: () => state.cleanupPending,
-    markSetupComplete: state.markSetupComplete,
+    isCleanupPending: setupState.isCleanupPending,
+    markSetupComplete: setupState.markSetupComplete,
   });
   return finalizeRegistration({ signal, log, registration, registrations, processObj });
 }

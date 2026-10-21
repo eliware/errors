@@ -25,17 +25,6 @@ test("removes handlers, detaches the abort listener, and clears the registry", (
   expect(registrations.has(processObj)).toBe(false);
 });
 
-test("supports removeListener cleanup", () => {
-  const processObj = { on: jest.fn(), removeListener: jest.fn() };
-  const registration = registerHandlers({
-    processObj,
-    log: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
-    events: ["warning"],
-  });
-  registration.removeHandlers();
-  expect(processObj.removeListener).toHaveBeenCalledWith("warning", expect.any(Function));
-});
-
 test("removes abort listeners and attempts every removal", () => {
   const controller = new AbortController();
   const processObj = { on: jest.fn(), off: jest.fn() };

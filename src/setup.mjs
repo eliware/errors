@@ -1,4 +1,4 @@
-import { rollbackRegistration } from "./rollback.mjs";
+import { rollbackRegistration } from "./setup/rollback.mjs";
 
 export function installHandlers({
   processObj,

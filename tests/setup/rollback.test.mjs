@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { rollbackRegistration } from "../src/rollback.mjs";
+import { rollbackRegistration } from "../../src/setup/rollback.mjs";
 
 test("removes attached listeners and clears successful registrations", () => {
   const processObj = { off: jest.fn() };

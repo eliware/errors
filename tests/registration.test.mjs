@@ -78,20 +78,7 @@ test("rejects malformed loggers during registration", () => {
   ).toThrow("logger must provide the debug method");
 });
 
-test("falls back to removable on listeners when once is unavailable", () => {
-  const processObj = { on: jest.fn(), off: jest.fn() };
-  const registration = registerHandlers({
-    processObj,
-    log: log(),
-    once: true,
-    events: ["warning"],
-  });
-  processObj.on.mock.calls[0][1]();
-  expect(processObj.off).toHaveBeenCalledWith("warning", expect.any(Function));
-  registration.removeHandlers();
-});
-
-test("removes every fallback one-shot listener after all events fire", () => {
+test("falls back to removable on listeners and removes all after every event fires", () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   const registration = registerHandlers({
     processObj,
@@ -99,8 +86,14 @@ test("removes every fallback one-shot listener after all events fire", () => {
     once: true,
     events: ["warning", "uncaughtException"],
   });
-  for (const [, handler] of processObj.on.mock.calls) handler();
+  const [[, warningHandler], [, exceptionHandler]] = processObj.on.mock.calls;
+  warningHandler();
+  expect(processObj.off).not.toHaveBeenCalled();
+  expect(registration.removed).toBe(false);
+  exceptionHandler();
   expect(processObj.off).toHaveBeenCalledTimes(2);
+  expect(processObj.off).toHaveBeenNthCalledWith(1, "warning", warningHandler);
+  expect(processObj.off).toHaveBeenNthCalledWith(2, "uncaughtException", exceptionHandler);
   expect(registration.removed).toBe(true);
 });
 

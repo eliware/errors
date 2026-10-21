@@ -1,5 +1,5 @@
 import { createHandlerRemoval } from "./handler-removal.mjs";
-import { finalizeCleanup } from "./finalize.mjs";
+import { finalizeCleanup } from "./cleanup/finalize.mjs";
 
 export function createCleanup({
   processObj,

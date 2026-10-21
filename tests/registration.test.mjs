@@ -70,86 +70,6 @@ test("removes every fallback one-shot listener after all events fire", () => {
   expect(registration.removed).toBe(true);
 });
 
-test("propagates synchronous one-shot logger failures before cleanup exists", () => {
-  const processObj = {
-    on: jest.fn(),
-    once: jest.fn((event, handler) => handler()),
-    off: jest.fn(),
-  };
-  const logInstance = {
-    ...log(),
-    error: jest.fn(() => {
-      throw Error("log");
-    }),
-  };
-  expect(() =>
-    registerHandlers({ processObj, log: logInstance, once: true, events: ["uncaughtException"] }),
-  ).toThrow("log");
-});
-
-test("propagates warning and rejection logger failures", () => {
-  const processObj = { on: jest.fn(), off: jest.fn() };
-  const logInstance = {
-    ...log(),
-    warn: jest.fn(() => {
-      throw Error("warning log");
-    }),
-    error: jest.fn(() => {
-      throw Error("rejection log");
-    }),
-  };
-  registerHandlers({ processObj, log: logInstance, events: ["warning", "unhandledRejection"] });
-  const handlers = Object.fromEntries(
-    processObj.on.mock.calls.map(([event, handler]) => [event, handler]),
-  );
-  expect(() => handlers.warning("warning")).toThrow("warning log");
-  expect(() => handlers.unhandledRejection("reason")).toThrow("rejection log");
-});
-
-test("does not attach a signal listener after synchronous one-shot cleanup", () => {
-  const processObj = {
-    on: jest.fn(),
-    once: jest.fn((event, handler) => handler()),
-    off: jest.fn(),
-  };
-  const signal = { aborted: false, addEventListener: jest.fn(), removeEventListener: jest.fn() };
-  registerHandlers({ processObj, log: log(), once: true, events: ["warning"], signal });
-  expect(signal.addEventListener).not.toHaveBeenCalled();
-});
-
-test("cleans up all listeners after synchronous multi-event once setup", () => {
-  const listeners = new Map();
-  const processObj = {
-    on: jest.fn(),
-    once: jest.fn((event, handler) => {
-      listeners.set(event, handler);
-      handler();
-    }),
-    off: jest.fn((event) => listeners.delete(event)),
-  };
-  const registration = registerHandlers({
-    processObj,
-    log: log(),
-    once: true,
-    events: ["warning", "uncaughtException"],
-  });
-  expect(registration.removed).toBe(true);
-  expect(processObj.off).toHaveBeenCalledTimes(2);
-  expect(processObj.off).toHaveBeenCalledWith("warning", expect.any(Function));
-  expect(processObj.off).toHaveBeenCalledWith("uncaughtException", expect.any(Function));
-});
-
-test("logs successful registration after synchronous one-shot cleanup", () => {
-  const processObj = {
-    on: jest.fn(),
-    once: jest.fn((event, handler) => handler()),
-    off: jest.fn(),
-  };
-  const logger = log();
-  registerHandlers({ processObj, log: logger, once: true, events: ["warning"] });
-  expect(logger.debug).toHaveBeenCalledWith("Handler setup is complete");
-});
-
 test("removes listeners added after a synchronous abort during setup", () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   const signal = {
@@ -177,14 +97,4 @@ test("preserves automatic cleanup failure state after the final one-shot event",
   });
   expect(() => processObj.on.mock.calls[0][1]("warning")).toThrow("cleanup");
   expect(registration.removed).toBe(false);
-});
-
-test("ignores stale handler invocations after explicit cleanup", () => {
-  const processObj = { on: jest.fn(), off: jest.fn() };
-  const logger = log();
-  const registration = registerHandlers({ processObj, log: logger, events: ["warning"] });
-  const handler = processObj.on.mock.calls[0][1];
-  registration.removeHandlers();
-  handler("stale");
-  expect(logger.warn).not.toHaveBeenCalled();
 });

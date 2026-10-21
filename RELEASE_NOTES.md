@@ -2,16 +2,22 @@
 
 ## 14.0.0 — 2026-10-21
 
+### Added
+
+- Added optional listener inspection to verify handler removal from process-like objects.
+
 ### Changed
 
 - Updated package metadata and the Eliware logger and test dependencies to version 14.0.0.
 - Aligned repository requirements with Convention 14.0.
+- Expanded API, usage, and troubleshooting guidance for exported types, listener removal, rollback, and cleanup retries.
+- Updated the custom process example to preserve unrelated listeners and support removal checks.
+- Simplified README packaging guidance and split cleanup, one-shot lifecycle, and validation modules.
 
 ### Fixed
 
 - Keep one-shot registrations available when handler cleanup fails so callers can retry cleanup.
-- Mark rejected handler removal as a cleanup failure that callers can retry.
-- Verify handler removal when a process object provides listener inspection.
+- Mark rejected removals and listeners that remain attached as cleanup failures.
 - Keep a recovery registration when setup rollback cannot remove an attached handler.
 
 ## 13.0.0 — 2026-10-19

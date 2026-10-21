@@ -5,8 +5,12 @@
 ### Changed
 
 - Updated package metadata and the Eliware logger and test dependencies to version 15.0.0.
-- Aligned repository specifications with Convention 15.0.
-- Updated dependency lock data to current compatible releases.
+- Updated repository specifications to Convention 15.0.
+- Updated the dependency lock file to current compatible releases.
+- Split handler setup, rollback, listener cleanup, registration state, registry, validation, and logging diagnostics into focused modules.
+- Moved tests to match their modules and added focused coverage for the new boundaries.
+- Merged overlapping tests for fallback one-shot listeners.
+- Preserved the public API and runtime behavior.
 
 ## 14.0.0 — 2026-10-21
 

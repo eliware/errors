@@ -104,7 +104,7 @@ test("removes every fallback one-shot listener after all events fire", () => {
   expect(registration.removed).toBe(true);
 });
 
-test("removes listeners added after a synchronous abort during setup", () => {
+test("removes listeners when abort fires as the signal listener is added", () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   const signal = {
     aborted: false,
@@ -112,6 +112,7 @@ test("removes listeners added after a synchronous abort during setup", () => {
     removeEventListener: jest.fn(),
   };
   const registration = registerHandlers({ processObj, log: log(), events: ["warning"], signal });
+  expect(registration.ready).toBe(true);
   expect(registration.removed).toBe(true);
   expect(processObj.off).toHaveBeenCalledWith("warning", expect.any(Function));
 });

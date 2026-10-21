@@ -13,7 +13,8 @@ export function rollbackRegistration({
   let rollbackFailed = false;
   for (const event of attachedEvents) {
     try {
-      processObj[remove](event, handlers[event]);
+      const result = processObj[remove](event, handlers[event]);
+      if (result === false) throw new Error(`processObj rejected removal for ${event}`);
     } catch (removalError) {
       if (!rollbackFailed) {
         rollbackError = removalError;

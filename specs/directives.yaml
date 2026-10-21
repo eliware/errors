@@ -23,5 +23,6 @@ directives:
           - Send a small set of error data to the default logger.
           - Propagate logger and listener failures to the caller.
           - Remove attached handlers after a failed setup when possible.
+          - Keep a recovery registration when rollback cannot remove an attached handler.
         donts:
           - Do not expose raw event values through the default logger.

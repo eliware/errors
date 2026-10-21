@@ -112,6 +112,7 @@ If an event method throws, the package also tries to remove that event's handler
 If rollback fails, the thrown error can include `rollbackError` and `registration` properties.
 Call `error.registration.removeHandlers()` to retry handler removal.
 If setup cleanup also fails, the thrown error can include a `cleanupError` property.
+If a removal method returns `false` during rollback, the package keeps a recovery registration.
 
 ## Process safety
 

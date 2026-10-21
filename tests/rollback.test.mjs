@@ -46,6 +46,26 @@ test("retains a registration when listener rollback fails", () => {
   expect(registrations.get(processObj)).toBe(registration);
 });
 
+test("retains a registration when listener rollback returns false", () => {
+  const primary = Error("setup");
+  const processObj = { off: jest.fn().mockReturnValue(false) };
+  const registration = { ready: false };
+  const registrations = new WeakMap([[processObj, registration]]);
+  rollbackRegistration({
+    error: primary,
+    attachedEvents: new Set(["warning"]),
+    processObj,
+    remove: "off",
+    handlers: { warning: jest.fn() },
+    registration,
+    registrations,
+  });
+  expect(primary.rollbackError.message).toBe("processObj rejected removal for warning");
+  expect(primary.registration).toBe(registration);
+  expect(registration.ready).toBe(true);
+  expect(registrations.get(processObj)).toBe(registration);
+});
+
 test("retains a registration when rollback throws undefined", () => {
   const processObj = {
     off: jest.fn(() => {

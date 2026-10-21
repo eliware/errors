@@ -11,6 +11,7 @@
 
 - Keep one-shot registrations available when handler cleanup fails so callers can retry cleanup.
 - Mark rejected handler removal as a cleanup failure that callers can retry.
+- Keep a recovery registration when setup rollback cannot remove an attached handler.
 
 ## 13.0.0 — 2026-10-19
 

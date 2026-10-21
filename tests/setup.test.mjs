@@ -1,5 +1,6 @@
 import { jest } from "@jest/globals";
 import { installHandlers } from "../src/setup.mjs";
+import registerHandlers from "../src/registration.mjs";
 
 function makeOptions(overrides = {}) {
   const processObj = { on: jest.fn(), off: jest.fn() };
@@ -98,4 +99,34 @@ test("removes a listener when the process method attaches it and then throws", (
   expect(() => installHandlers(options)).toThrow(setupError);
   expect(processObj.off).toHaveBeenCalledWith("warning", options.handlers.warning);
   expect(listeners.size).toBe(0);
+});
+
+test("retains a recovery registration when rollback returns false", () => {
+  const listeners = new Set();
+  const setupError = Error("setup");
+  const processObj = {
+    on: jest.fn((event, handler) => {
+      listeners.add(handler);
+      throw setupError;
+    }),
+    off: jest
+      .fn()
+      .mockImplementationOnce(() => false)
+      .mockImplementation((event, handler) => {
+        listeners.delete(handler);
+      }),
+  };
+  expect(() =>
+    registerHandlers({
+      processObj,
+      log: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+      events: ["warning"],
+    }),
+  ).toThrow(setupError);
+  expect(setupError.rollbackError.message).toBe("processObj rejected removal for warning");
+  expect(listeners.size).toBe(1);
+  expect(setupError.registration.ready).toBe(true);
+  setupError.registration.removeHandlers();
+  expect(listeners.size).toBe(0);
+  expect(setupError.registration.removed).toBe(true);
 });

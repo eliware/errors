@@ -10,6 +10,7 @@
 ### Fixed
 
 - Keep one-shot registrations available when handler cleanup fails so callers can retry cleanup.
+- Mark rejected handler removal as a cleanup failure that callers can retry.
 
 ## 13.0.0 — 2026-10-19
 

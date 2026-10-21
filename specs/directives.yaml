@@ -15,6 +15,7 @@ directives:
           - Remove registered handlers when the supplied AbortSignal aborts.
           - Report cleanup state through the removed property.
           - Keep failed handler cleanup retryable through the returned registration.
+          - Mark a false result from handler removal as a cleanup failure.
         donts:
           - Do not change options on an existing registration.
       - id: E-104.0.1

@@ -90,6 +90,7 @@ Logger and listener errors propagate to the caller.
 Call `removeHandlers()` more than once when required.
 The method does not repeat completed removals.
 If a removal fails, the method throws the first error and sets `removed` to `false`.
+If `off()` or `removeListener()` returns `false`, the package treats removal as failed.
 Call the method again to retry the remaining cleanup.
 The method does not remove other process listeners.
 

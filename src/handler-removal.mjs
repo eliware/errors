@@ -10,7 +10,8 @@ export function createHandlerRemoval({ processObj, remove, selected, handlers, d
         continue;
       }
       try {
-        processObj[remove](event, handlers[event]);
+        const result = processObj[remove](event, handlers[event]);
+        if (result === false) throw new Error(`processObj rejected removal for ${event}`);
         removedEvents.add(event);
       } catch (error) {
         if (!hasRemovalError) {

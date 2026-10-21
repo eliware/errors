@@ -104,6 +104,20 @@ test("keeps cleanup retryable when a process removal throws undefined", () => {
   expect(processObj.off).toHaveBeenCalledTimes(2);
 });
 
+test("keeps cleanup retryable when a process removal returns false", () => {
+  const processObj = { on: jest.fn(), off: jest.fn().mockReturnValueOnce(false) };
+  const registration = registerHandlers({
+    processObj,
+    log: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
+    events: ["warning"],
+  });
+  expect(() => registration.removeHandlers()).toThrow("processObj rejected removal for warning");
+  expect(registration.removed).toBe(false);
+  registration.removeHandlers();
+  expect(registration.removed).toBe(true);
+  expect(processObj.off).toHaveBeenCalledTimes(2);
+});
+
 test("reports abort-listener removal failures after handler cleanup", () => {
   const signal = {
     aborted: false,

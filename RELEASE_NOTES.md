@@ -1,5 +1,12 @@
 # Release Notes
 
+## 14.0.0 — 2026-10-20
+
+### Changed
+
+- Updated package metadata and the Eliware logger and test dependencies to version 14.0.0.
+- Aligned repository requirements with Convention 14.0.
+
 ## 13.0.0 — 2026-10-19
 
 ### Added

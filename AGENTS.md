@@ -33,6 +33,8 @@ Keep secrets, credentials, private data, and runtime data out of Git.
 
 ## Changes
 
+Keep user-visible changes in RELEASE_NOTES.md.
+
 ## Library
 
 Run focused tests first during development.

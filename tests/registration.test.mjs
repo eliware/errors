@@ -110,6 +110,36 @@ test("removes listeners when abort fires as the signal listener is added", () =>
   expect(processObj.off).toHaveBeenCalledWith("warning", expect.any(Function));
 });
 
+test("removes selected handlers when AbortSignal aborts", () => {
+  const processObj = { on: jest.fn(), off: jest.fn() };
+  const controller = new AbortController();
+  const registration = registerHandlers({
+    processObj,
+    log: log(),
+    events: ["warning"],
+    signal: controller.signal,
+  });
+
+  controller.abort();
+
+  expect(registration.removed).toBe(true);
+  expect(processObj.off).toHaveBeenCalledWith("warning", expect.any(Function));
+});
+
+test("removes handlers immediately when AbortSignal is already aborted", () => {
+  const controller = new AbortController();
+  controller.abort();
+  const processObj = { on: jest.fn(), off: jest.fn() };
+  const registration = registerHandlers({
+    processObj,
+    log: log(),
+    signal: controller.signal,
+  });
+
+  expect(registration.removed).toBe(true);
+  expect(processObj.off).toHaveBeenCalledWith("uncaughtException", expect.any(Function));
+});
+
 test("keeps failed one-shot cleanup retryable through its registration", () => {
   const cleanupError = Error("cleanup");
   const processObj = {

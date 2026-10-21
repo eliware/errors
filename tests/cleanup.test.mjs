@@ -25,21 +25,6 @@ test("removes handlers, detaches the abort listener, and clears the registry", (
   expect(registrations.has(processObj)).toBe(false);
 });
 
-test("cleans up selected handlers through AbortSignal", () => {
-  const processObj = { on: jest.fn(), off: jest.fn() };
-  const log = { debug: jest.fn(), error: jest.fn(), warn: jest.fn() };
-  const controller = new AbortController();
-  const registration = registerHandlers({
-    processObj,
-    log,
-    events: ["warning"],
-    signal: controller.signal,
-  });
-  controller.abort();
-  expect(registration.removed).toBe(true);
-  expect(processObj.off).toHaveBeenCalledWith("warning", expect.any(Function));
-});
-
 test("supports removeListener cleanup", () => {
   const processObj = { on: jest.fn(), removeListener: jest.fn() };
   const registration = registerHandlers({
@@ -163,19 +148,6 @@ test("retries abort-listener removal after handler cleanup succeeds", () => {
   expect(registration.removed).toBe(true);
   expect(processObj.off).toHaveBeenCalledTimes(1);
   expect(signal.removeEventListener).toHaveBeenCalledTimes(2);
-});
-
-test("cleans up immediately when the signal is already aborted", () => {
-  const controller = new AbortController();
-  controller.abort();
-  const processObj = { on: jest.fn(), off: jest.fn() };
-  const registration = registerHandlers({
-    processObj,
-    log: { debug: jest.fn(), error: jest.fn(), warn: jest.fn() },
-    signal: controller.signal,
-  });
-  expect(registration.removed).toBe(true);
-  expect(processObj.off).toHaveBeenCalledWith("uncaughtException", expect.any(Function));
 });
 
 test("ignores repeated cleanup calls", () => {

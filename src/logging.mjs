@@ -1,7 +1,4 @@
-function diagnostic(value) {
-  if (value instanceof Error) return { name: "Error", type: "Error" };
-  return { type: typeof value };
-}
+import { diagnostic } from "./logging/diagnostic.mjs";
 
 export function eventLog(log, event, ...args) {
   if (event === "warning") return log.warn("Warning", { warning: diagnostic(args[0]) });

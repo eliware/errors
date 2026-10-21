@@ -1,5 +1,13 @@
 # Release Notes
 
+## 15.0.0 — 2026-10-21
+
+### Changed
+
+- Updated package metadata and the Eliware logger and test dependencies to version 15.0.0.
+- Aligned repository specifications with Convention 15.0.
+- Updated dependency lock data to current compatible releases.
+
 ## 14.0.0 — 2026-10-21
 
 ### Added

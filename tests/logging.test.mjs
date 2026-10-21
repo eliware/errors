@@ -27,6 +27,26 @@ test("routes warning and rejection events to the logger", () => {
   expect(log.error).toHaveBeenCalledWith("Unhandled promise error", { reasonType: "string" });
 });
 
+test("propagates logger failures from warning and rejection callbacks", () => {
+  const processObj = { on: jest.fn(), off: jest.fn() };
+  const log = {
+    error: jest.fn(() => {
+      throw Error("rejection log");
+    }),
+    warn: jest.fn(() => {
+      throw Error("warning log");
+    }),
+    debug: jest.fn(),
+  };
+  registerHandlers({ processObj, log, events: ["warning", "unhandledRejection"] });
+  const handlers = Object.fromEntries(
+    processObj.on.mock.calls.map(([event, handler]) => [event, handler]),
+  );
+
+  expect(() => handlers.warning("warning")).toThrow("warning log");
+  expect(() => handlers.unhandledRejection("reason")).toThrow("rejection log");
+});
+
 test("logs uncaught exceptions", () => {
   const processObj = { on: jest.fn(), off: jest.fn() };
   const log = { debug: jest.fn(), error: jest.fn(), warn: jest.fn() };

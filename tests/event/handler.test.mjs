@@ -31,25 +31,6 @@ test("logs events and ignores removed or fired handlers", () => {
   expect(handler("ignored")).toBeUndefined();
 });
 
-test("propagates logger failures from warning and rejection callbacks", () => {
-  const processObj = { on: jest.fn(), off: jest.fn() };
-  const log = {
-    error: jest.fn(() => {
-      throw Error("rejection log");
-    }),
-    warn: jest.fn(() => {
-      throw Error("warning log");
-    }),
-    debug: jest.fn(),
-  };
-  registerHandlers({ processObj, log, events: ["warning", "unhandledRejection"] });
-  const handlers = Object.fromEntries(
-    processObj.on.mock.calls.map(([event, handler]) => [event, handler]),
-  );
-  expect(() => handlers.warning("warning")).toThrow("warning log");
-  expect(() => handlers.unhandledRejection("reason")).toThrow("rejection log");
-});
-
 test("propagates synchronous one-shot logger failures during setup", () => {
   const processObj = {
     on: jest.fn(),

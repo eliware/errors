@@ -1,5 +1,5 @@
 import { attachFailure } from "../failure.mjs";
-import { removeProcessListener } from "../cleanup/listener.mjs";
+import { removeAttachedHandlers } from "../cleanup/attached-handlers.mjs";
 
 export function rollbackRegistration({
   error,
@@ -10,18 +10,14 @@ export function rollbackRegistration({
   registration,
   registrations,
 }) {
-  let rollbackError;
-  let rollbackFailed = false;
-  for (const event of attachedEvents) {
-    try {
-      removeProcessListener({ processObj, remove, event, handler: handlers[event] });
-    } catch (removalError) {
-      if (!rollbackFailed) {
-        rollbackError = removalError;
-        rollbackFailed = true;
-      }
-    }
-  }
+  const { removalError: rollbackError, hasRemovalError: rollbackFailed } = removeAttachedHandlers({
+    processObj,
+    remove,
+    events: attachedEvents,
+    handlers,
+    shouldSkip: () => false,
+    markRemoved: () => {},
+  });
   if (rollbackFailed) {
     registration.ready = true;
     registrations.set(processObj, registration);

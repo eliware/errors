@@ -1,5 +1,14 @@
 # Release Notes
 
+## 15.0.1 — 2026-10-26
+
+### Changed
+
+- Updated the package and Eliware logger and test dependencies to version 15.0.1.
+- Updated compatible dependency versions in the lock file.
+- Clarified the removal method requirements for process objects without listener inspection.
+- Preserved the public API and runtime behavior.
+
 ## 15.0.0 — 2026-10-21
 
 ### Changed

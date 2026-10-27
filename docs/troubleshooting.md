@@ -46,6 +46,9 @@ If `removeHandlers()` throws, call it again to retry failed removals.
 The package does not remove other listeners from the process object.
 If one removal fails, the package keeps the completed removals and retries only the remaining work.
 
+If the process object omits `listeners()`, its removal method must throw or return `false` when it cannot remove a handler.
+The package cannot find a failure when a removal method returns without removing a handler.
+
 ## A second registration does not use new options
 
 Each process object can have one active registration.
